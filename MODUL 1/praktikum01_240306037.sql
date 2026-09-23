@@ -66,6 +66,7 @@ ORDER BY prodi_raw;
 
 
 
+
 --11. PROBLEM CHALLENGE
 --jumlah baris dari 5 tabel sumber
 SELECT 'program_studi' AS tabel, COUNT(*) AS jumlah_baris
@@ -129,6 +130,7 @@ ORDER BY angkatan;
 SELECT COUNT(*) AS missing_kota
 FROM src.mahasiswa
 WHERE TRIM(COALESCE(kota_asal_raw, '')) = '';
+
 
 
 
