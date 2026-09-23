@@ -13,6 +13,7 @@ CREATE TABLE src.mata_kuliah (kode_mk TEXT,nama_mk TEXT,kode_prodi TEXT,sks TEXT
 
 
 
+
 -- DATA INVENTORY LENGKAP
 SELECT 'program_studi' AS "Tabel", COUNT(*) AS "Jumlah Baris",
     5 AS "Jumlah Kolom",
@@ -84,6 +85,7 @@ FROM src.mata_kuliah;
 
 
 
+
 --jumlah nim unik mahasiswa.csv
 select COUNT(*) AS jumlah_baris,
     COUNT(DISTINCT nim) AS jumlah_nim_unik,
@@ -96,11 +98,13 @@ FROM src.mahasiswa;
 
 
 
+
 --baris mahasiswa yang excess duplicate jika NIM dianggap natural key?
 select COUNT(*) AS raw_rows,
     COUNT(DISTINCT nim) AS distinct_nim,
     COUNT(*) - COUNT(DISTINCT nim) AS excess_duplicate_rows
 FROM src.mahasiswa;
+
 
 
 
@@ -117,6 +121,7 @@ SELECT
 FROM src.mahasiswa
 GROUP BY angkatan
 ORDER BY angkatan;
+
 
 
 
@@ -211,6 +216,7 @@ select 'mata_kuliah', COUNT(*),
     'Master Data',
     'Karena merupakan entitas utama materi kurikulum dan SKS'
 FROM src.mata_kuliah;
+
 
 
 
