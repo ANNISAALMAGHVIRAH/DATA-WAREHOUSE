@@ -27,17 +27,20 @@ Praktikum Unit 1.1 bertujuan menyiapkan source layer pada PostgreSQL, memuat dat
 
 ## Ketentuan Praktikum
 
-1. Menggunakan PostgreSQL dan schema `src`.
-2. Nilai raw dipertahankan sebagaimana tersedia pada file sumber.
-3. Tidak ada cleaning, standardisasi, deduplikasi, `UPDATE`, atau `DELETE` terhadap isi raw source.
-4. Path file CSV disesuaikan dengan lokasi dataset pada komputer masing-masing.
-5. Seluruh query tersimpan pada file `SQL/modul_1_unit_1.1.sql`.
+1. Gunakan PostgreSQL dan schema `src`.
+2. Pertahankan nilai raw sebagaimana tersedia pada file sumber.
+3. Jangan melakukan proses cleaning, standardisasi, deduplikasi, `UPDATE`, atau `DELETE` terhadap isi raw source pada unit ini.
+4. Sesuaikan path file CSV dengan lokasi dataset pada komputer masing-masing.
+5. Untuk setiap aktivitas query, cantumkan query yang dijalankan, hasil eksekusi, dan interpretasi.
+6. Apabila hasil aktual berbeda dari nilai acuan pada bahan praktikum, catat perbedaannya dan lakukan pemeriksaan; jangan mengubah data hanya agar hasilnya sama.
 
 ---
 
 ## 1. Verifikasi Environment PostgreSQL
 
 ### 1.1 Memeriksa versi PostgreSQL
+
+Query yang digunakan:
 
 ```sql
 SELECT version();
@@ -67,6 +70,8 @@ SELECT
 
 
 ### 1.3 Memeriksa keberadaan schema `src`
+
+Query yang digunakan:
 
 ```sql
 SELECT schema_name
@@ -248,14 +253,15 @@ CREATE TABLE IF NOT EXISTS src.kelulusan (
 
 ### 3.1 Proses impor CSV melalui DBeaver
 
-Sepuluh file CSV diimpor menggunakan fitur **Import Data** pada DBeaver karena praktikum dijalankan melalui DBeaver di Windows. Perintah `\\copy` merupakan perintah khusus `psql` sehingga tidak dijalankan pada SQL Editor DBeaver.
+Sepuluh file CSV diimpor menggunakan fitur Import Data pada DBeaver karena praktikum dijalankan melalui DBeaver di Windows. Perintah \\copy merupakan perintah khusus psql sehingga tidak dijalankan pada SQL Editor DBeaver.
 
 Langkah impor yang dilakukan:
-1. Klik kanan tabel tujuan pada schema `src`, lalu pilih **Import Data**.
-2. Pilih sumber **CSV** dan tentukan file yang sesuai dari folder `01_raw_data`.
-3. Pastikan encoding `UTF-8`, delimiter koma, dan opsi header aktif.
+
+1. Klik kanan tabel tujuan pada schema src, lalu pilih Import Data.
+2. Pilih sumber CSV dan tentukan file yang sesuai dari folder 01_raw_data.
+3. Pastikan encoding UTF-8, delimiter koma, dan opsi header aktif.
 4. Periksa preview serta pemetaan kolom sumber ke kolom tujuan.
-5. Klik **Proceed** dan tunggu sampai proses selesai.
+5. Klik Proceed dan tunggu sampai proses selesai.
 
 | No. | File CSV | Tabel tujuan |
 |---:|---|---|
