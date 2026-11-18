@@ -48,7 +48,7 @@ SELECT version();
 **Hasil eksekusi:**
 
 
-![Gambar 25. Hasil SELECT version()](gambar/unit-1.2_01.png)
+![Gambar 27. Hasil SELECT version()](gambar/unit-1.2_01.png)
 
 
 ### 1.2 Memeriksa database dan user aktif
@@ -62,7 +62,7 @@ SELECT
 **Hasil eksekusi:**
 
 
-![Gambar 26. Hasil database dan user aktif](gambar/unit-1.2_02.png)
+![Gambar 28. Hasil database dan user aktif](gambar/unit-1.2_02.png)
 
 
 ### 1.3 Memastikan schema `src` tersedia
@@ -76,7 +76,7 @@ WHERE schema_name = 'src';
 **Hasil eksekusi:**
 
 
-![Gambar 27. Hasil pemeriksaan schema src](gambar/unit-1.2_03.png)
+![Gambar 29. Hasil pemeriksaan schema src](gambar/unit-1.2_03.png)
 
 
 ---
@@ -114,7 +114,7 @@ SELECT 'kelulusan', COUNT(*) FROM src.kelulusan;
 
 **Hasil eksekusi**
 
-![Gambar 28. Soal 1 – Jumlah record setiap tabel](gambar/unit-1.2_04.png)
+![Gambar 30. Soal 1 – Jumlah record setiap tabel](gambar/unit-1.2_04.png)
 
 
 | Dataset | Jumlah Record |
@@ -153,7 +153,7 @@ ORDER BY table_name;
 
 **Hasil eksekusi**
 
-![Gambar 29. Soal 2 – Jumlah kolom setiap tabel](gambar/unit-1.2_05.png)
+![Gambar 31. Soal 2 – Jumlah kolom setiap tabel](gambar/unit-1.2_05.png)
 
 
 | Nama Tabel | Jumlah Kolom |
