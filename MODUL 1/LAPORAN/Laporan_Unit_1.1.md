@@ -637,11 +637,11 @@ ORDER BY prodi_raw;
 
 **Hasil eksekusi:**
 
-![Gambar 16. Distribusi label program studi mentah (baris 1–11)](gambar/unit-1.1_16.png)
+![Gambar 17. Distribusi label program studi mentah (baris 1–11)](gambar/unit-1.1_17.png)
 
-![Gambar 17. Distribusi label program studi mentah (baris 12–22)](gambar/unit-1.1_17.png)
+![Gambar 18. Distribusi label program studi mentah (baris 12–22)](gambar/unit-1.1_18.png)
 
-![Gambar 18. Distribusi label program studi mentah (baris 21–30)](gambar/unit-1.1_18.png)
+![Gambar 19. Distribusi label program studi mentah (baris 21–30)](gambar/unit-1.1_19.png)
 
 
 | prodi_raw | jumlah |
@@ -697,7 +697,7 @@ ORDER BY jk_raw;
 
 **Hasil eksekusi:**
 
-![Gambar 19. Variasi label jenis kelamin](gambar/unit-1.1_19.png)
+![Gambar 20. Variasi label jenis kelamin](gambar/unit-1.1_20.png)
 
 
 | jk_raw | jumlah |
@@ -725,11 +725,11 @@ LIMIT 5;
 
 **Hasil eksekusi:**
 
-![Gambar 20. Sampel lima record mahasiswa (kolom nim–jk_raw)](gambar/unit-1.1_20.png)
+![Gambar 21. Sampel lima record mahasiswa (kolom nim–jk_raw)](gambar/unit-1.1_21.png)
 
-![Gambar 21. Sampel lima record mahasiswa (kolom tanggal_lahir_raw–kode_prodi_raw)](gambar/unit-1.1_21.png)
+![Gambar 22. Sampel lima record mahasiswa (kolom tanggal_lahir_raw–kode_prodi_raw)](gambar/unit-1.1_22.png)
 
-![Gambar 22. Sampel lima record mahasiswa (kolom tanggal_masuk_raw–email_kampus)](gambar/unit-1.1_22.png)
+![Gambar 23. Sampel lima record mahasiswa (kolom tanggal_masuk_raw–email_kampus)](gambar/unit-1.1_23.png)
 
 
 | nim | nama | jk_raw | tanggal_lahir_raw | kota_asal_raw | kode_prodi_raw | prodi_raw | angkatan | tanggal_masuk_raw | status_raw | email_kampus |
@@ -766,7 +766,7 @@ ORDER BY rows DESC;
 
 **Hasil eksekusi:**
 
-![Gambar 23. Source dengan jumlah baris terbesar](gambar/unit-1.1_23.png)
+![Gambar 24. Source dengan jumlah baris terbesar](gambar/unit-1.1_24.png)
 
 
 | source | rows |
@@ -810,7 +810,7 @@ SELECT 'kelulusan', COUNT(DISTINCT nim) FROM src.kelulusan;
 
 **Hasil eksekusi:**
 
-![Gambar 24. Jumlah NIM unik pada tabel transaksi/aktivitas](gambar/unit-1.1_24.png)
+![Gambar 25. Jumlah NIM unik pada tabel transaksi/aktivitas](gambar/unit-1.1_25.png)
 
 
 | source | distinct_nim |
