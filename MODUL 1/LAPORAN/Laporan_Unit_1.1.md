@@ -296,9 +296,9 @@ Langkah impor yang dilakukan:
 
 **Bukti proses impor:** hasil query verifikasi jumlah record seluruh tabel setelah impor.
 
-![Gambar 8. Jumlah baris seluruh sepuluh tabel setelah impor](gambar/unit-1.1_08.png)
+![Gambar 6. Jumlah baris seluruh sepuluh tabel setelah impor](gambar/unit-1.1_06.png)
 
-**Interpretasi:** Berdasarkan keluaran impor yang dicatat, kesepuluh file CSV berhasil dimuat ke tabel yang sesuai dan jumlah baris hasil impor sama dengan jumlah baris acuan pada bahan praktikum (lihat bagian 6). Nilai raw dipertahankan dengan memuat file CSV melalui fitur **Import Data** DBeaver (tanpa transformasi), sesuai pemetaan kolom tabel sumber, dan tanpa menjalankan `UPDATE` atau `DELETE` setelah impor.
+**Interpretasi:**
 
 ---
 
@@ -364,7 +364,7 @@ ORDER BY tabel;
 | `program_studi` | 6 |
 | `semester` | 8 |
 
-**Interpretasi:** Jumlah baris aktual sama dengan jumlah acuan pada bahan praktikum untuk kelima tabel master/reference (6, 8, 1.965, 96, dan 208). Perbedaan tidak ditemukan. Perlu dicatat bahwa jumlah baris `mahasiswa` (1.965) belum berarti 1.965 mahasiswa unik, karena keunikan NIM diperiksa pada bagian 9.
+**Interpretasi:** 
 
 ---
 
