@@ -433,7 +433,7 @@ ORDER BY table_name;
 
 **Hasil eksekusi:**
 
-![Gambar 10. Jumlah kolom setiap tabel](gambar/unit-1.1_010.png)
+![Gambar 10. Jumlah kolom setiap tabel](gambar/unit-1.1_10.png)
 
 
 | table_name | jumlah_kolom |
