@@ -108,115 +108,126 @@ Source layer menggunakan schema `src` untuk menyimpan data mentah (*raw source*)
 **Script DDL yang digunakan:**
 
 ```sql
--- Struktur kolom dan urutan mengikuti header file CSV UADW v1.0.
--- Atribut mentah (*_raw) dan atribut kategori disimpan sebagai TEXT agar nilai asli tidak berubah.
+-- 1. Membuat schema src
 CREATE SCHEMA IF NOT EXISTS src;
 
+-- 2. Membuat sepuluh tabel sumber 
+-- Membuat tabel program_studi
 CREATE TABLE IF NOT EXISTS src.program_studi (
-    kode_prodi      TEXT,
-    nama_prodi      TEXT,
-    fakultas        TEXT,
-    departemen      TEXT,
-    status          TEXT
+    kode_prodi TEXT,
+    nama_prodi TEXT,
+    fakultas TEXT,
+    departemen TEXT,
+    status TEXT
 );
 
+-- Membuat tabel semester
 CREATE TABLE IF NOT EXISTS src.semester (
-    semester_id     TEXT,
-    tahun_akademik  TEXT,
-    term            TEXT,
-    urutan_tahun    INTEGER,
-    tanggal_mulai   DATE,
-    tanggal_selesai DATE
+    semester_id TEXT,
+    tahun_akademik TEXT,
+    term TEXT,
+    urutan_tahun INTEGER,
+    tanggal_mulai TEXT,
+    tanggal_selesai TEXT
 );
 
+-- Membuat tabel mahasiswa
 CREATE TABLE IF NOT EXISTS src.mahasiswa (
-    nim                 TEXT,
-    nama                TEXT,
-    jk_raw              TEXT,
-    tanggal_lahir_raw   TEXT,
-    kota_asal_raw       TEXT,
-    kode_prodi_raw      TEXT,
-    prodi_raw           TEXT,
-    angkatan            TEXT,
-    tanggal_masuk_raw   TEXT,
-    status_raw          TEXT,
-    email_kampus        TEXT
+    nim TEXT,
+    nama TEXT,
+    jk_raw TEXT,
+    tanggal_lahir_raw TEXT,
+    kota_asal_raw TEXT,
+    kode_prodi_raw TEXT,
+    prodi_raw TEXT,
+    angkatan TEXT,
+    tanggal_masuk_raw TEXT,
+    status_raw TEXT,
+    email_kampus TEXT
 );
 
+-- Membuat tabel dosen
 CREATE TABLE IF NOT EXISTS src.dosen (
-    nidn                TEXT,
-    nama_dosen          TEXT,
-    jk_raw              TEXT,
-    unit_prodi_raw      TEXT,
-    jabatan_akademik    TEXT,
-    tanggal_masuk_raw   TEXT,
-    status              TEXT
+    nidn TEXT,
+    nama_dosen TEXT,
+    jk_raw TEXT,
+    unit_prodi_raw TEXT,
+    jabatan_akademik TEXT,
+    tanggal_masuk_raw TEXT,
+    status TEXT
 );
 
+-- Membuat tabel mata_kuliah
 CREATE TABLE IF NOT EXISTS src.mata_kuliah (
-    kode_mk              TEXT,
-    nama_mk              TEXT,
-    kode_prodi           TEXT,
-    sks                  INTEGER,
+    kode_mk TEXT,
+    nama_mk TEXT,
+    kode_prodi TEXT,
+    sks INTEGER,
     semester_rekomendasi INTEGER,
-    kategori             TEXT,
-    aktif                TEXT
+    kategori TEXT,
+    aktif TEXT
 );
 
+-- Membuat tabel krs
 CREATE TABLE IF NOT EXISTS src.krs (
-    krs_id              TEXT,
-    nim                 TEXT,
-    kode_mk             TEXT,
-    semester_id         TEXT,
-    kelas               TEXT,
-    status_krs          TEXT,
-    tanggal_ambil_raw   TEXT,
-    sumber_sistem       TEXT
+    krs_id TEXT,
+    nim TEXT,
+    kode_mk TEXT,
+    semester_id TEXT,
+    kelas TEXT,
+    status_krs TEXT,
+    tanggal_ambil_raw TEXT,
+    sumber_sistem TEXT
 );
 
+-- Membuat tabel nilai
 CREATE TABLE IF NOT EXISTS src.nilai (
-    nilai_id            TEXT,
-    nim                 TEXT,
-    kode_mk             TEXT,
-    semester_id         TEXT,
-    nilai_angka         NUMERIC,
-    nilai_huruf         TEXT,
-    status_lulus        TEXT,
-    tanggal_input_raw   TEXT
+    nilai_id TEXT,
+    nim TEXT,
+    kode_mk TEXT,
+    semester_id TEXT,
+    nilai_angka NUMERIC(6,2),
+    nilai_huruf TEXT,
+    status_lulus TEXT,
+    tanggal_input_raw TEXT
 );
 
+-- 9. Membuat tabel aktivitas_lms
 CREATE TABLE IF NOT EXISTS src.aktivitas_lms (
-    lms_event_id    TEXT,
-    nim             TEXT,
-    kode_mk         TEXT,
-    semester_id     TEXT,
-    waktu_event     TIMESTAMP,
-    tipe_event      TEXT,
-    durasi_menit    INTEGER,
-    skor_kuis       NUMERIC,
-    platform        TEXT
+    lms_event_id TEXT,
+    nim TEXT,
+    kode_mk TEXT,
+    semester_id TEXT,
+    waktu_event TEXT,
+    tipe_event TEXT,
+    durasi_menit INTEGER,
+    skor_kuis NUMERIC(6,2),
+    platform TEXT
 );
 
+-- Membuat tabel pembayaran
 CREATE TABLE IF NOT EXISTS src.pembayaran (
-    pembayaran_id       TEXT,
-    nim                 TEXT,
-    semester_id         TEXT,
-    tanggal_bayar_raw   TEXT,
-    nominal_tagihan     NUMERIC,
-    nominal_bayar       NUMERIC,
-    status_pembayaran   TEXT,
-    kanal               TEXT
+    pembayaran_id TEXT,
+    nim TEXT,
+    semester_id TEXT,
+    tanggal_bayar_raw TEXT,
+    nominal_tagihan BIGINT,
+    nominal_bayar BIGINT,
+    status_pembayaran TEXT,
+    kanal TEXT
 );
 
+-- Membuat tabel kelulusan
 CREATE TABLE IF NOT EXISTS src.kelulusan (
-    kelulusan_id        TEXT,
-    nim                 TEXT,
-    tanggal_lulus_raw   TEXT,
-    ipk_final           NUMERIC,
-    masa_studi_bulan    INTEGER,
-    predikat            TEXT,
-    status_tepat_waktu  TEXT
+    kelulusan_id TEXT,
+    nim TEXT,
+    tanggal_lulus_raw TEXT,
+    ipk_final NUMERIC(4,2),
+    masa_studi_bulan INTEGER,
+    predikat TEXT,
+    status_tepat_waktu TEXT
 );
+
 ```
 
 **Bukti eksekusi / hasil:**
