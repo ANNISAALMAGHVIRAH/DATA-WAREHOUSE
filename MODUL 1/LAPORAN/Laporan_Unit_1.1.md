@@ -731,6 +731,8 @@ LIMIT 5;
 
 ![Gambar 23. Sampel lima record mahasiswa (kolom tanggal_masuk_raw–email_kampus)](gambar/unit-1.1_23.png)
 
+![Gambar 24. Sampel lima record mahasiswa (kolom tanggal_masuk_raw–email_kampus)](gambar/unit-1.1_24.png)
+
 
 | nim | nama | jk_raw | tanggal_lahir_raw | kota_asal_raw | kode_prodi_raw | prodi_raw | angkatan | tanggal_masuk_raw | status_raw | email_kampus |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -766,7 +768,7 @@ ORDER BY rows DESC;
 
 **Hasil eksekusi:**
 
-![Gambar 24. Source dengan jumlah baris terbesar](gambar/unit-1.1_24.png)
+![Gambar 25. Source dengan jumlah baris terbesar](gambar/unit-1.1_25.png)
 
 
 | source | rows |
@@ -810,7 +812,7 @@ SELECT 'kelulusan', COUNT(DISTINCT nim) FROM src.kelulusan;
 
 **Hasil eksekusi:**
 
-![Gambar 25. Jumlah NIM unik pada tabel transaksi/aktivitas](gambar/unit-1.1_25.png)
+![Gambar 26. Jumlah NIM unik pada tabel transaksi/aktivitas](gambar/unit-1.1_26.png)
 
 
 | source | distinct_nim |
