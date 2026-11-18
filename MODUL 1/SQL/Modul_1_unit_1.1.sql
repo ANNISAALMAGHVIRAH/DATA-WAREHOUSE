@@ -31,7 +31,7 @@ WHERE schema_name = 'src';
 -- 1. Membuat schema src
 CREATE SCHEMA IF NOT EXISTS src;
 
--- 1. Membuat sepuluh tabel sumber 
+-- 2. Membuat sepuluh tabel sumber 
 -- Membuat tabel program_studi
 CREATE TABLE IF NOT EXISTS src.program_studi (
     kode_prodi TEXT,
@@ -186,7 +186,6 @@ UNION ALL
 SELECT 'kelulusan', COUNT(*) FROM src.kelulusan;
 
 
-
 -- ============================================================
 -- D. Inventarisasi dan Verifikasi Source
 -- ============================================================
@@ -209,14 +208,10 @@ ORDER BY table_name;
 	--Lima tabel yang diperiksa adalah program_studi, semester, mahasiswa, dosen, dan mata_kuliah.
 
 SELECT 'program_studi' AS tabel, COUNT(*) AS jumlah_baris FROM src.program_studi
-UNION ALL
-SELECT 'semester', COUNT(*) FROM src.semester
-UNION ALL
-SELECT 'mahasiswa', COUNT(*) FROM src.mahasiswa
-UNION ALL
-SELECT 'dosen', COUNT(*) FROM src.dosen
-UNION ALL
-SELECT 'mata_kuliah', COUNT(*) FROM src.mata_kuliah
+UNION ALL SELECT 'semester',    COUNT(*) FROM src.semester
+UNION ALL SELECT 'mahasiswa',   COUNT(*) FROM src.mahasiswa
+UNION ALL SELECT 'dosen',       COUNT(*) FROM src.dosen
+UNION ALL SELECT 'mata_kuliah', COUNT(*) FROM src.mata_kuliah
 ORDER BY tabel;
 
 
@@ -255,14 +250,13 @@ ORDER BY table_name;
 
 --Soal 10. Memeriksa struktur kolom tabel mahasiswa
 SELECT
-    ordinal_position,
-    column_name,
-    data_type
+    ordinal_position AS posisi_kolom,
+    column_name      AS nama_kolom,
+    data_type        AS tipe_data
 FROM information_schema.columns
 WHERE table_schema = 'src'
   AND table_name = 'mahasiswa'
 ORDER BY ordinal_position;
-
 
 
 -- ============================================================
@@ -271,43 +265,38 @@ ORDER BY ordinal_position;
 
 -- SOAL 11. MEMERIKSA CANDIDATE KEY
 SELECT
-    COUNT(*) AS jumlah_seluruh_baris,
-    COUNT(DISTINCT nim) AS jumlah_nim_berbeda,
-    COUNT(*) - COUNT(DISTINCT nim) AS indikasi_baris_berlebih
+    COUNT(*) AS raw_rows,
+    COUNT(DISTINCT nim) AS distinct_nim,
+    COUNT(*) - COUNT(DISTINCT nim) AS excess_duplicate_rows
 FROM src.mahasiswa;
-
 
 -- SOAL 12. MENGETAHUI RENTANG TAHUN ANGKATAN MAHASISW
 SELECT
-    MIN(angkatan) AS angkatan_paling_awal,
-    MAX(angkatan) AS angkatan_paling_akhir
+    MIN(CAST(angkatan AS INTEGER)) AS angkatan_min,
+    MAX(CAST(angkatan AS INTEGER)) AS angkatan_max
 FROM src.mahasiswa;
 
 
 -- SOAL 13. MENGHITUNG DATA KOTA ASAL YANG KOSONG
-SELECT
-    COUNT(*) AS jumlah_kota_asal_kosong
+SELECT COUNT(*) AS missing_kota
 FROM src.mahasiswa
-WHERE kota_asal_raw IS NULL
-   OR TRIM(kota_asal_raw) = '';
+WHERE TRIM(COALESCE(kota_asal_raw, '')) = '';
 
 
 -- SOAL 14. MENGHITUNG VARIASI LABEL PROGRAM STUDI
-SELECT
-    COUNT(DISTINCT prodi_raw) AS jumlah_variasi_prodi
+SELECT COUNT(DISTINCT prodi_raw) AS distinct_prodi_raw
 FROM src.mahasiswa;
 
 
 -- SOAL 15. MENGHITUNG JUMLAH PROGRAM STUDI PADA TABEL REFERENSI
-SELECT
-    COUNT(*) AS jumlah_program_studi
+SELECT COUNT(*) AS canonical_programs
 FROM src.program_studi;
 
 
 -- SOAL 16. MENAMPILKAN DISTRIBUSI LABEL PROGRAM STUDI MENTAH
 SELECT
     prodi_raw,
-    COUNT(*) AS jumlah_mahasiswa
+    COUNT(*) AS jumlah
 FROM src.mahasiswa
 GROUP BY prodi_raw
 ORDER BY prodi_raw;
@@ -316,7 +305,7 @@ ORDER BY prodi_raw;
 -- SOAL 17. MENAMPILKAN VARIASI JENIS KELAMIN MAHASISWA
 SELECT
     jk_raw,
-    COUNT(*) AS jumlah_mahasiswa
+    COUNT(*) AS jumlah
 FROM src.mahasiswa
 GROUP BY jk_raw
 ORDER BY jk_raw;
@@ -327,46 +316,28 @@ SELECT * FROM src.mahasiswa
 LIMIT 5;
 
 
-
-
 -- ============================================================
 -- F. PROFILING UKURAN SOURCE DAN RELASI AWAL ANTAR-TABEL
 -- ============================================================
 
 -- SOAL 19. MENGIDENTIFIKASI SOURCE DENGAN JUMLAH BARIS TERBESAR
-SELECT 'program_studi' AS nama_tabel, COUNT(*) AS jumlah_baris
-FROM src.program_studi
-UNION ALL
-SELECT 'semester', COUNT(*) FROM src.semester
-UNION ALL
-SELECT 'mahasiswa', COUNT(*) FROM src.mahasiswa
-UNION ALL
-SELECT 'dosen', COUNT(*) FROM src.dosen
-UNION ALL
-SELECT 'mata_kuliah', COUNT(*) FROM src.mata_kuliah
-UNION ALL
-SELECT 'krs', COUNT(*) FROM src.krs
-UNION ALL
-SELECT 'nilai', COUNT(*) FROM src.nilai
-UNION ALL
-SELECT 'aktivitas_lms', COUNT(*) FROM src.aktivitas_lms
-UNION ALL
-SELECT 'pembayaran', COUNT(*) FROM src.pembayaran
-UNION ALL
-SELECT 'kelulusan', COUNT(*) FROM src.kelulusan
-ORDER BY jumlah_baris DESC;
+SELECT 'program_studi' AS source, COUNT(*) AS rows FROM src.program_studi
+UNION ALL SELECT 'semester', COUNT(*) FROM src.semester
+UNION ALL SELECT 'mahasiswa', COUNT(*) FROM src.mahasiswa
+UNION ALL SELECT 'dosen', COUNT(*) FROM src.dosen
+UNION ALL SELECT 'mata_kuliah', COUNT(*) FROM src.mata_kuliah
+UNION ALL SELECT 'krs', COUNT(*) FROM src.krs
+UNION ALL SELECT 'nilai', COUNT(*) FROM src.nilai
+UNION ALL SELECT 'aktivitas_lms', COUNT(*) FROM src.aktivitas_lms
+UNION ALL SELECT 'pembayaran', COUNT(*) FROM src.pembayaran
+UNION ALL SELECT 'kelulusan', COUNT(*) FROM src.kelulusan
+ORDER BY rows DESC;
 
 
--- SOAL 20. MENGIDENTIFIKASI INDIKASI RELASI MAHASISWA
--- DENGAN TABEL TRANSAKSI
-select 'krs' AS nama_tabel, COUNT(DISTINCT nim) AS jumlah_nim_unik FROM src.krs
-UNION ALL
-select 'nilai', COUNT(DISTINCT nim) FROM src.nilai
-UNION ALL
-select 'aktivitas_lms', COUNT(DISTINCT nim) FROM src.aktivitas_lms
-UNION ALL
-select 'pembayaran', COUNT(DISTINCT nim) FROM src.pembayaran
-UNION ALL
-select 'kelulusan', COUNT(DISTINCT nim) FROM src.kelulusan
-ORDER BY nama_tabel;
-
+-- SOAL 20. MENGIDENTIFIKASI INDIKASI RELASI MAHASISWA DENGAN TABEL TRANSAKSI
+SELECT 'krs' AS source, COUNT(DISTINCT nim) AS distinct_nim
+FROM src.krs
+UNION all SELECT 'nilai', COUNT(DISTINCT nim) FROM src.nilai
+UNION all SELECT 'aktivitas_lms', COUNT(DISTINCT nim) FROM src.aktivitas_lms
+UNION all SELECT 'pembayaran', COUNT(DISTINCT nim) FROM src.pembayaran
+UNION all SELECT 'kelulusan', COUNT(DISTINCT nim) FROM src.kelulusan;
