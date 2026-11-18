@@ -560,7 +560,7 @@ WHERE TRIM(COALESCE(kota_asal_raw, '')) = '';
 
 **Hasil eksekusi:**
 
-![Gambar 13. Jumlah kota asal kosong](gambar/unit-1.1_13.png)
+![Gambar 14. Jumlah kota asal kosong](gambar/unit-1.1_14.png)
 
 
 | missing_kota |
@@ -582,7 +582,7 @@ FROM src.mahasiswa;
 
 **Hasil eksekusi:**
 
-![Gambar 14. Jumlah label prodi_raw berbeda](gambar/unit-1.1_14.png)
+![Gambar 15. Jumlah label prodi_raw berbeda](gambar/unit-1.1_15.png)
 
 
 | distinct_prodi_raw |
@@ -604,7 +604,7 @@ FROM src.program_studi;
 
 **Hasil eksekusi:**
 
-![Gambar 15. Jumlah program studi pada tabel referensi](gambar/unit-1.1_15.png)
+![Gambar 16. Jumlah program studi pada tabel referensi](gambar/unit-1.1_16.png)
 
 
 | canonical_programs |
