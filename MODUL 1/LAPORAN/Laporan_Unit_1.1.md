@@ -63,7 +63,7 @@ SELECT
 
 | database_aktif | user_aktif |
 |---|---|
-| [postgres] | [postgres] |
+| [uadw_lab] | [postgres] |
 
 
 ### 1.3 Memeriksa keberadaan schema `src`
