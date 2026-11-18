@@ -194,7 +194,7 @@ FROM src.mahasiswa;
 
 **Hasil eksekusi**
 
-![Gambar 30. Soal 3 – Keunikan NIM mahasiswa](gambar/unit-1.2_06.png)
+![Gambar 32. Soal 3 – Keunikan NIM mahasiswa](gambar/unit-1.2_06.png)
 
 
 | Raw Rows | Distinct NIM | Excess Duplicate Rows |
@@ -224,9 +224,9 @@ ORDER BY jumlah_kemunculan DESC, nim;
 
 **Hasil eksekusi**
 
-![Gambar 31. Soal 4 – NIM duplikat (bagian 1 dari 2)](gambar/unit-1.2_07.png)
+![Gambar 33. Soal 4 – NIM duplikat (bagian 1 dari 2)](gambar/unit-1.2_07.png)
 
-![Gambar 32. Soal 4 – NIM duplikat (bagian 2 dari 2)](gambar/unit-1.2_08.png)
+![Gambar 34. Soal 4 – NIM duplikat (bagian 2 dari 2)](gambar/unit-1.2_08.png)
 
 
 Hasil query menampilkan **15 baris** (15 NIM), masing-masing muncul 2 kali.
@@ -271,7 +271,7 @@ WHERE kota_asal_raw IS NULL
 
 **Hasil eksekusi**
 
-![Gambar 33. Soal 5 – Kelengkapan kota asal](gambar/unit-1.2_09.png)
+![Gambar 35. Soal 5 – Kelengkapan kota asal](gambar/unit-1.2_09.png)
 
 
 | Missing Kota Asal |
@@ -300,11 +300,11 @@ ORDER BY frekuensi DESC, prodi_raw;
 
 **Hasil eksekusi**
 
-![Gambar 34. Soal 6 – Distribusi prodi_raw (bagian 1 dari 3)](gambar/unit-1.2_10.png)
+![Gambar 36. Soal 6 – Distribusi prodi_raw (bagian 1 dari 3)](gambar/unit-1.2_10.png)
 
-![Gambar 35. Soal 6 – Distribusi prodi_raw (bagian 2 dari 3)](gambar/unit-1.2_11.png)
+![Gambar 37. Soal 6 – Distribusi prodi_raw (bagian 2 dari 3)](gambar/unit-1.2_11.png)
 
-![Gambar 36. Soal 6 – Distribusi prodi_raw (bagian 3 dari 3)](gambar/unit-1.2_12.png)
+![Gambar 38. Soal 6 – Distribusi prodi_raw (bagian 3 dari 3)](gambar/unit-1.2_12.png)
 
 
 | prodi_raw | frekuensi |
@@ -358,7 +358,7 @@ FROM src.mahasiswa;
 
 **Hasil eksekusi**
 
-![Gambar 37. Soal 7 – Variasi penulisan program studi](gambar/unit-1.2_13.png)
+![Gambar 39. Soal 7 – Variasi penulisan program studi](gambar/unit-1.2_13.png)
 
 
 | Jumlah Variasi `prodi_raw` |
@@ -387,7 +387,7 @@ ORDER BY frekuensi DESC, jk_raw;
 
 **Hasil eksekusi**
 
-![Gambar 38. Soal 8 – Distribusi jk_raw](gambar/unit-1.2_14.png)
+![Gambar 40. Soal 8 – Distribusi jk_raw](gambar/unit-1.2_14.png)
 
 
 | jk_raw | frekuensi |
