@@ -423,8 +423,8 @@ ORDER BY tabel;
 
 ```sql
 SELECT
-    table_name   AS nama_tabel,
-    COUNT(*)     AS jumlah_kolom
+    table_name,
+    COUNT(*) AS jumlah_kolom
 FROM information_schema.columns
 WHERE table_schema = 'src'
 GROUP BY table_name
@@ -497,9 +497,9 @@ ORDER BY ordinal_position;
 
 ```sql
 SELECT
-    COUNT(*)                        AS raw_rows,
-    COUNT(DISTINCT nim)             AS distinct_nim,
-    COUNT(*) - COUNT(DISTINCT nim)  AS excess_duplicate_rows
+    COUNT(*) AS raw_rows,
+    COUNT(DISTINCT nim) AS distinct_nim,
+    COUNT(*) - COUNT(DISTINCT nim) AS excess_duplicate_rows
 FROM src.mahasiswa;
 ```
 
@@ -555,8 +555,7 @@ FROM src.mahasiswa;
 ```sql
 SELECT COUNT(*) AS missing_kota
 FROM src.mahasiswa
-WHERE kota_asal_raw IS NULL
-   OR TRIM(kota_asal_raw) = '';
+WHERE TRIM(COALESCE(kota_asal_raw, '')) = '';
 ```
 
 **Hasil eksekusi:**
@@ -752,26 +751,17 @@ LIMIT 5;
 **Query SQL:**
 
 ```sql
-SELECT 'program_studi' AS source, COUNT(*) AS jumlah_baris FROM src.program_studi
-UNION ALL
-SELECT 'semester', COUNT(*) FROM src.semester
-UNION ALL
-SELECT 'mahasiswa', COUNT(*) FROM src.mahasiswa
-UNION ALL
-SELECT 'dosen', COUNT(*) FROM src.dosen
-UNION ALL
-SELECT 'mata_kuliah', COUNT(*) FROM src.mata_kuliah
-UNION ALL
-SELECT 'krs', COUNT(*) FROM src.krs
-UNION ALL
-SELECT 'nilai', COUNT(*) FROM src.nilai
-UNION ALL
-SELECT 'aktivitas_lms', COUNT(*) FROM src.aktivitas_lms
-UNION ALL
-SELECT 'pembayaran', COUNT(*) FROM src.pembayaran
-UNION ALL
-SELECT 'kelulusan', COUNT(*) FROM src.kelulusan
-ORDER BY jumlah_baris DESC;
+SELECT 'program_studi' AS source, COUNT(*) AS rows FROM src.program_studi
+UNION ALL SELECT 'semester', COUNT(*) FROM src.semester
+UNION ALL SELECT 'mahasiswa', COUNT(*) FROM src.mahasiswa
+UNION ALL SELECT 'dosen', COUNT(*) FROM src.dosen
+UNION ALL SELECT 'mata_kuliah', COUNT(*) FROM src.mata_kuliah
+UNION ALL SELECT 'krs', COUNT(*) FROM src.krs
+UNION ALL SELECT 'nilai', COUNT(*) FROM src.nilai
+UNION ALL SELECT 'aktivitas_lms', COUNT(*) FROM src.aktivitas_lms
+UNION ALL SELECT 'pembayaran', COUNT(*) FROM src.pembayaran
+UNION ALL SELECT 'kelulusan', COUNT(*) FROM src.kelulusan
+ORDER BY rows DESC;
 ```
 
 **Hasil eksekusi:**
@@ -805,11 +795,17 @@ ORDER BY jumlah_baris DESC;
 **Query SQL:**
 
 ```sql
-SELECT 'krs' AS tabel, COUNT(DISTINCT nim) AS jumlah_nim_unik FROM src.krs
-UNION ALL SELECT 'nilai',         COUNT(DISTINCT nim) FROM src.nilai
-UNION ALL SELECT 'aktivitas_lms', COUNT(DISTINCT nim) FROM src.aktivitas_lms
-UNION ALL SELECT 'pembayaran',    COUNT(DISTINCT nim) FROM src.pembayaran
-UNION ALL SELECT 'kelulusan',     COUNT(DISTINCT nim) FROM src.kelulusan;
+SELECT 'krs' AS source,
+       COUNT(DISTINCT nim) AS distinct_nim
+FROM src.krs
+UNION ALL
+SELECT 'nilai', COUNT(DISTINCT nim) FROM src.nilai
+UNION ALL
+SELECT 'aktivitas_lms', COUNT(DISTINCT nim) FROM src.aktivitas_lms
+UNION ALL
+SELECT 'pembayaran', COUNT(DISTINCT nim) FROM src.pembayaran
+UNION ALL
+SELECT 'kelulusan', COUNT(DISTINCT nim) FROM src.kelulusan;
 ```
 
 **Hasil eksekusi:**
