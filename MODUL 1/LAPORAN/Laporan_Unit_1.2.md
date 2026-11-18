@@ -6,14 +6,14 @@
 
 ## Identitas Laporan
 
-Nama       : Annisa Almaghvirah  
-NIM        : 240306037
-Program Studi : Teknologi Informasi  
+Nama       : [Annisa Almaghvirah]  
+NIM        : [240306037]  
+Program Studi : [Teknologi Informasi]  
 Modul      : 1  
 Unit       : 1.2  
-Tanggal Praktikum : 5 November 2026
+Tanggal Praktikum : [5 November 2026]  
 DBMS       : PostgreSQL  
-Database   : uadw_lab  
+Database   : [uadw_lab]  
 Schema     : `src`
 ---
 
