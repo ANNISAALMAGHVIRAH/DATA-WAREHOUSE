@@ -318,7 +318,7 @@ ORDER BY table_name;
 
 **Hasil eksekusi:**
 
-![Gambar 6. Daftar base table pada schema src](gambar/unit-1.1_06.png)
+![Gambar 7. Daftar base table pada schema src](gambar/unit-1.1_07.png)
 
 
 | table_schema | table_name |
@@ -353,7 +353,7 @@ ORDER BY tabel;
 
 **Hasil eksekusi:**
 
-![Gambar 7. Jumlah baris lima tabel master/reference](gambar/unit-1.1_07.png)
+![Gambar 8. Jumlah baris lima tabel master/reference](gambar/unit-1.1_08.png)
 
 
 | tabel | jumlah_baris |
@@ -397,7 +397,7 @@ ORDER BY tabel;
 
 **Hasil eksekusi:**
 
-![Gambar 6. Jumlah baris seluruh sepuluh tabel](gambar/unit-1.1_06.png)
+![Gambar 9. Jumlah baris seluruh sepuluh tabel](gambar/unit-1.1_09.png)
 
 
 | Dataset | Jumlah baris aktual | Jumlah baris acuan (bila tersedia) | Status/catatan |
@@ -433,7 +433,7 @@ ORDER BY table_name;
 
 **Hasil eksekusi:**
 
-![Gambar 7. Jumlah kolom setiap tabel](gambar/unit-1.1_07.png)
+![Gambar 10. Jumlah kolom setiap tabel](gambar/unit-1.1_010.png)
 
 
 | table_name | jumlah_kolom |
@@ -470,7 +470,7 @@ ORDER BY ordinal_position;
 
 **Hasil eksekusi:**
 
-![Gambar 8. Struktur kolom tabel mahasiswa](gambar/unit-1.1_8.png)
+![Gambar 11. Struktur kolom tabel mahasiswa](gambar/unit-1.1_11.png)
 
 
 | posisi_kolom | nama_kolom | tipe_data |
@@ -505,7 +505,7 @@ FROM src.mahasiswa;
 
 **Hasil eksekusi:**
 
-![Gambar 11. Verifikasi candidate key NIM](gambar/unit-1.1_11.png)
+![Gambar 12. Verifikasi candidate key NIM](gambar/unit-1.1_12.png)
 
 
 | raw_rows | distinct_nim | excess_duplicate_rows |
@@ -537,7 +537,7 @@ FROM src.mahasiswa;
 
 **Hasil eksekusi:**
 
-![Gambar 12. Rentang tahun angkatan](gambar/unit-1.1_12.png)
+![Gambar 13. Rentang tahun angkatan](gambar/unit-1.1_13.png)
 
 
 | angkatan_min | angkatan_max |
