@@ -12,8 +12,8 @@
 
 | Identitas | Keterangan |
 |---|---|
-| Nama | Eka Yuliana Rizky |
-| NIM | 240306011 |
+| Nama | Annisa Almaghvirah |
+| NIM | 240306037 |
 | Program Studi | Teknologi Informasi |
 | Kelas/Kelompok | A / 4 |
 | Modul | 1 |
