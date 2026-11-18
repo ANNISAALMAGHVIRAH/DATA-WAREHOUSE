@@ -397,7 +397,7 @@ ORDER BY tabel;
 
 **Hasil eksekusi:**
 
-![Gambar 8. Jumlah baris seluruh sepuluh tabel](gambar/unit-1.1_08.png)
+![Gambar 6. Jumlah baris seluruh sepuluh tabel](gambar/unit-1.1_06.png)
 
 
 | Dataset | Jumlah baris aktual | Jumlah baris acuan (bila tersedia) | Status/catatan |
@@ -433,7 +433,7 @@ ORDER BY table_name;
 
 **Hasil eksekusi:**
 
-![Gambar 9. Jumlah kolom setiap tabel](gambar/unit-1.1_09.png)
+![Gambar 7. Jumlah kolom setiap tabel](gambar/unit-1.1_07.png)
 
 
 | table_name | jumlah_kolom |
@@ -470,7 +470,7 @@ ORDER BY ordinal_position;
 
 **Hasil eksekusi:**
 
-![Gambar 10. Struktur kolom tabel mahasiswa](gambar/unit-1.1_10.png)
+![Gambar 8. Struktur kolom tabel mahasiswa](gambar/unit-1.1_8.png)
 
 
 | posisi_kolom | nama_kolom | tipe_data |
