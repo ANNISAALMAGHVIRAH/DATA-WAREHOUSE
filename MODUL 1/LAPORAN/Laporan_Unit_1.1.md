@@ -298,7 +298,7 @@ Langkah impor yang dilakukan:
 
 ![Gambar 6. Jumlah baris seluruh sepuluh tabel setelah impor](gambar/unit-1.1_06.png)
 
-**Interpretasi:**
+**Interpretasi:** Proses impor sepuluh file CSV ke tabel tujuan pada schema `src` berhasil dilakukan melalui fitur Import Data di DBeaver. Berdasarkan catatan hasil impor, jumlah baris yang masuk berkisar dari 6 baris pada `program_studi` hingga 200.356 baris pada `aktivitas_lms`. Jumlah tersebut selanjutnya diverifikasi kembali menggunakan query `COUNT(*)` agar dapat dipastikan bahwa data telah termuat sesuai jumlah yang dilaporkan.
 
 ---
 
@@ -364,7 +364,7 @@ ORDER BY tabel;
 | `program_studi` | 6 |
 | `semester` | 8 |
 
-**Interpretasi:** 
+**Interpretasi:** Lima tabel master/reference berhasil diverifikasi memiliki jumlah baris yang berbeda sesuai fungsinya. Tabel `mahasiswa` berisi 1.965 baris, `mata_kuliah` 208 baris, `dosen` 96 baris, `semester` 8 baris, dan `program_studi` 6 baris. Hasil ini menunjukkan bahwa data pada kelima tabel telah tersedia dan dapat digunakan sebagai sumber referensi untuk proses profiling berikutnya.
 
 ---
 
@@ -449,7 +449,7 @@ ORDER BY table_name;
 | `program_studi` | 5 |
 | `semester` | 6 |
 
-**Interpretasi:** Tabel `mahasiswa` memiliki kolom terbanyak (11), sedangkan `program_studi` paling sedikit (5). Jumlah kolom sesuai dengan definisi source pada bahan praktikum.
+**Interpretasi:** Berdasarkan hasil query, jumlah kolom pada setiap tabel berada pada rentang 5 sampai 11 kolom. Tabel `mahasiswa` memiliki jumlah kolom terbanyak, yaitu 11 kolom, sedangkan `program_studi` memiliki jumlah kolom paling sedikit, yaitu 5 kolom. Jumlah kolom tersebut sesuai dengan struktur source yang digunakan dalam praktikum.
 
 ---
 
@@ -487,8 +487,7 @@ ORDER BY ordinal_position;
 | 10 | status_raw | text |
 | 11 | email_kampus | text |
 
-**Interpretasi:** Tabel memiliki 11 kolom dan seluruhnya bertipe `text`, sesuai urutan header CSV. Kolom `*_raw` (`jk_raw`, `tanggal_lahir_raw`, `kota_asal_raw`, `kode_prodi_raw`, `prodi_raw`, `tanggal_masuk_raw`, `status_raw`) menyimpan nilai mentah apa adanya; kolom `angkatan` juga bertipe teks sehingga perlu `CAST` ke integer saat dihitung (lihat bagian 10). Struktur sesuai dengan definisi source pada bahan praktikum.
-
+**Interpretasi:** Tabel `mahasiswa` memiliki 11 kolom sesuai urutan header CSV. Berdasarkan hasil verifikasi, 10 kolom bertipe `text`, sedangkan kolom `angkatan` bertipe `integer`. Kolom-kolom yang menggunakan akhiran `_raw` tetap menyimpan nilai sumber tanpa standardisasi pada tahap ini. Karena `angkatan` sudah bertipe `integer`, nilai minimum dan maksimum dapat dihitung secara numerik tanpa perlu mengubah tipe datanya terlebih dahulu.
 ---
 
 ## 9. Verifikasi Candidate Key Mahasiswa
@@ -544,7 +543,8 @@ FROM src.mahasiswa;
 |---:|---:|
 | 2021 | 2024 |
 
-**Interpretasi:** Dataset mencakup mahasiswa angkatan 2021 sampai 2024 (empat angkatan). Konversi ke integer diperlukan karena kolom disimpan sebagai teks; tanpa konversi, `MIN`/`MAX` mengurutkan secara teks.
+**Interpretasi:** Berdasarkan hasil query, tahun angkatan mahasiswa paling awal adalah 2021 dan paling akhir adalah 2024. Dengan demikian, dataset mencakup empat kelompok angkatan, yaitu 2021, 2022, 2023, dan 2024. Karena kolom `angkatan` pada hasil verifikasi bertipe `integer`, fungsi `MIN` dan `MAX` menghitung rentang tahun secara numerik.
+
 
 ---
 
@@ -567,7 +567,7 @@ WHERE TRIM(COALESCE(kota_asal_raw, '')) = '';
 |---:|
 | 30 |
 
-**Interpretasi:** Terdapat 30 record (sekitar 1,53% dari 1.965) tanpa kota asal. Dampaknya, analisis persebaran daerah asal mahasiswa menjadi tidak lengkap. Data tidak diisi atau diperbaiki pada tahap ini.
+**Interpretasi:** Hasil query menunjukkan bahwa terdapat 30 record mahasiswa yang tidak memiliki informasi kota asal, atau sekitar 1,53% dari total 1.965 baris. Kondisi ini dapat menyebabkan analisis persebaran daerah asal mahasiswa menjadi kurang lengkap karena sebagian data lokasi tidak tersedia. Nilai yang kosong tetap dibiarkan apa adanya karena tahap ini hanya melakukan profiling dan belum mencakup proses pengisian atau perbaikan data.
 
 ---
 
@@ -589,8 +589,7 @@ FROM src.mahasiswa;
 |---:|
 | 30 |
 
-**Interpretasi:** Terdapat 30 label berbeda pada `prodi_raw`, padahal program studi resmi hanya 6 (lihat bagian 13). Jumlahnya tidak sama, sehingga terindikasi variasi penulisan nama program studi.
-
+**Interpretasi:** Hasil query menemukan 30 nilai berbeda pada kolom `prodi_raw`, sedangkan tabel referensi `src.program_studi` hanya memuat 6 program studi resmi. Perbedaan jumlah tersebut menunjukkan adanya variasi label program studi pada data mahasiswa, misalnya penggunaan singkatan, perbedaan kapitalisasi, atau bentuk penulisan lainnya. Temuan ini menjadi indikasi awal bahwa label program studi perlu dipetakan ke referensi resmi pada tahap transformasi, tetapi belum diubah pada source.
 ---
 
 ## 13. Menghitung Jumlah Program Studi pada Tabel Referensi
@@ -618,7 +617,7 @@ FROM src.program_studi;
 | Variasi label `prodi_raw` | 30 |
 | Record pada `src.program_studi` | 6 |
 
-**Interpretasi:** Tabel referensi memuat 6 nama resmi sehingga menjadi pembanding awal bagi `prodi_raw`. Selisih 24 label menunjukkan adanya variasi representasi (singkatan, kapitalisasi, penulisan lain) pada data mahasiswa.
+**Interpretasi:** Tabel referensi `src.program_studi` berisi 6 record program studi yang digunakan sebagai acuan nama program studi resmi. Jika dibandingkan dengan 30 variasi label pada kolom `prodi_raw`, terdapat selisih 24 label. Selisih ini menunjukkan bahwa data mahasiswa memuat beberapa bentuk penulisan selain label resmi, sehingga diperlukan pemetaan label ke program studi yang sesuai pada tahap berikutnya.
 
 ---
 
@@ -678,7 +677,7 @@ ORDER BY prodi_raw;
 | TRK | 16 |
 
 
-**Interpretasi:** Label dengan frekuensi terbesar adalah *Teknologi Informasi* (286). Sebanyak 435 record (22,1%) memakai 24 label non-canonical seperti singkatan (IF, TI, DS, BD) dan kapitalisasi berbeda (TEKNOLOGI INFORMASI), yang perlu diperiksa lebih lanjut sebelum standardisasi.
+**Interpretasi:** Distribusi menunjukkan bahwa label *Teknologi Informasi* memiliki jumlah terbanyak, yaitu 286 record. Selain enam label yang sama dengan nama program studi pada tabel referensi, terdapat 24 label lain dengan total 435 record atau sekitar 22,1% dari seluruh data mahasiswa. Variasi tersebut terlihat dalam bentuk singkatan, pemendekan nama, dan perbedaan kapitalisasi. Oleh karena itu, label-label tersebut perlu diperiksa dan dipetakan terlebih dahulu sebelum dilakukan standardisasi agar setiap mahasiswa terhubung dengan program studi yang tepat.
 
 ---
 
@@ -709,7 +708,7 @@ ORDER BY jk_raw;
 | P | 764 |
 | Perempuan | 183 |
 
-**Interpretasi:** Ada 6 label untuk 2 konsep jenis kelamin (L/Laki-laki/M dan P/Perempuan/F). Standardisasi diperlukan pada tahap berikutnya agar agregasi per jenis kelamin tidak terpecah, tetapi tidak dilakukan pada tabel raw.
+**Interpretasi:**  Hasil pengelompokan menunjukkan terdapat enam label pada kolom `jk_raw`, yaitu `F`, `L`, `Laki-laki`, `M`, `P`, dan `Perempuan`. Keenam label tersebut merepresentasikan dua kategori, yaitu laki-laki dan perempuan, tetapi ditulis dengan bentuk yang berbeda. Jika data langsung dihitung berdasarkan label mentah, jumlah setiap kategori dapat terpisah ke beberapa kelompok. Karena itu, standardisasi label diperlukan pada tahap transformasi berikutnya, bukan pada source raw.
 
 ---
 
@@ -744,7 +743,8 @@ LIMIT 5;
 
 *Lima baris pertama berdasarkan urutan baris pada file sumber (tanpa `ORDER BY`).*
 
-**Interpretasi:** Sampel membantu memahami bentuk dan isi tiap kolom: NIM berpola tahun-kode prodi-nomor (mis. 21TI0001), jenis kelamin muncul dengan beberapa bentuk (M, L, Laki-laki, Perempuan, P), dan tanggal lahir memakai format berbeda (14/01/2002 dan 2002-05-20). Namun lima baris hanya sebagian kecil dari 1.965 baris sehingga tidak cukup untuk menyimpulkan kualitas seluruh dataset; masalah seperti duplikasi, nilai kosong, atau variasi label baru terlihat lewat agregasi pada seluruh data.
+**Interpretasi:** Lima record yang ditampilkan memberikan gambaran awal mengenai isi dan format kolom pada tabel `mahasiswa`. Contohnya, NIM memiliki pola gabungan tahun, kode program studi, dan nomor urut; kolom jenis kelamin menggunakan beberapa variasi label; sedangkan tanggal lahir ditulis dengan format yang berbeda. Meskipun demikian, sampel lima baris belum mewakili keseluruhan 1.965 record. Oleh karena itu, kesimpulan mengenai kualitas data harus didasarkan pada pemeriksaan seluruh record, seperti perhitungan duplikasi, nilai kosong, dan variasi label yang telah dilakukan pada bagian sebelumnya.
+
 
 ---
 
@@ -788,7 +788,7 @@ ORDER BY rows DESC;
 
 **Jumlah baris:** 200.356
 
-**Interpretasi:** `aktivitas_lms` adalah tabel terbesar karena mencatat setiap aktivitas mahasiswa di LMS. Informasi ukuran berguna untuk merencanakan beban pemrosesan, pembagian proses (*batch*), dan prioritas optimasi pada pengolahan data berikutnya.
+**Interpretasi:** Berdasarkan hasil pengurutan jumlah baris, tabel `aktivitas_lms` merupakan source dengan ukuran terbesar, yaitu 200.356 baris. Jumlah tersebut jauh lebih besar dibandingkan tabel source lainnya karena tabel ini mencatat aktivitas mahasiswa pada Learning Management System (LMS). Ukuran data tersebut perlu diperhatikan dalam perencanaan proses pengolahan berikutnya, terutama untuk menentukan strategi pemrosesan dan kebutuhan optimasi.
 
 ---
 
@@ -833,7 +833,7 @@ SELECT 'kelulusan', COUNT(DISTINCT nim) FROM src.kelulusan;
 | REL04 | `mahasiswa` | `nim` | `pembayaran` | `nim` | 1 mahasiswa : banyak pembayaran | Uji orphan NIM pembayaran |
 | REL05 | `mahasiswa` | `nim` | `kelulusan` | `nim` | 1 mahasiswa : 0/1 outcome kelulusan secara bisnis | Uji duplikasi kelulusan dan orphan NIM |
 
-**Interpretasi:** Kolom `nim` muncul pada tabel mahasiswa dan kelima tabel transaksi/aktivitas, sehingga terindikasi relasi satu-ke-banyak antara mahasiswa dan transaksi (kecuali kelulusan yang secara bisnis 0 atau 1 per mahasiswa). Jumlah NIM unik pada `krs`, `nilai`, `aktivitas_lms`, dan `pembayaran` (masing-masing 1.950) sama dengan jumlah NIM unik pada `mahasiswa`, sedangkan `kelulusan` hanya 345 karena tidak semua mahasiswa sudah lulus. Namun kesamaan nama kolom dan jumlah NIM berbeda **belum membuktikan integritas referensial**; pemeriksaan lanjutan (uji orphan dengan `LEFT JOIN`) dilakukan pada Unit 1.2.
+**Interpretasi:** Kolom `nim` terdapat pada tabel `mahasiswa` serta tabel `krs`, `nilai`, `aktivitas_lms`, `pembayaran`, dan `kelulusan`. Hal ini menunjukkan adanya dugaan hubungan antara data mahasiswa dan data transaksi atau aktivitas. Jumlah NIM unik pada `krs`, `nilai`, `aktivitas_lms`, dan `pembayaran` masing-masing 1.950, sama dengan jumlah NIM unik pada tabel `mahasiswa`, sedangkan tabel `kelulusan` memiliki 345 NIM unik. Perbedaan tersebut dapat terjadi karena tidak semua mahasiswa memiliki catatan kelulusan. Namun, kesamaan nama kolom dan jumlah NIM unik belum membuktikan bahwa seluruh NIM pada tabel terkait benar-benar cocok. Integritas relasi masih perlu diperiksa melalui pengujian orphan menggunakan `LEFT JOIN` pada Unit 1.2.
 
 ---
 
