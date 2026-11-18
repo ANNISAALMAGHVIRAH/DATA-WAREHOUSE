@@ -137,6 +137,11 @@ FROM src.mahasiswa
 GROUP BY 1
 ORDER BY jumlah_record DESC, format_tanggal;
 
+-- Interpretasi:
+    -- Berdasarkan hasil query, ditemukan tiga variasi format tanggal masuk mahasiswa. 
+    -- Format yang paling banyak digunakan adalah YYYY-MM-DD sebanyak 1.429 data. 
+    -- Hal ini menunjukkan bahwa penulisan tanggal masuk mahasiswa belum sepenuhnya seragam sehingga perlu dilakukan standarisasi pada tahap pengolahan data selanjutnya.
+
 
 -- =========================================================
 -- F. KRS - DUPLIKASI DATA
@@ -212,12 +217,6 @@ WHERE nilai_angka BETWEEN 0 AND 100
           WHEN nilai_angka >= 50 THEN 'D'
           ELSE 'E'
       END;
-
--- Interpretasi:
-    -- Berdasarkan hasil query, ditemukan tiga variasi format tanggal masuk mahasiswa. 
-    -- Format yang paling banyak digunakan adalah YYYY-MM-DD sebanyak 1.429 data. 
-    -- Hal ini menunjukkan bahwa penulisan tanggal masuk mahasiswa belum sepenuhnya seragam sehingga perlu dilakukan standarisasi pada tahap pengolahan data selanjutnya.
-
 
 -- SOAL 20. Memeriksa konsistensi nilai angka dengan status kelulusan
 SELECT COUNT(*) AS jumlah_ketidaksesuaian_status_lulus
