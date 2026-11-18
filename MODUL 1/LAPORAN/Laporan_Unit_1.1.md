@@ -21,13 +21,13 @@
 
   Kelas/Kelompok:                      A
 
-  Modul                               1
+  Modul:                               1
 
-  Unit                                1.1
+  Unit:                                1.1
 
-  Tanggal Praktikum                  -
+  Tanggal Praktikum:                  -
 
-  Dosen/Instruktur                    adam Maulachela
+  Dosen/Instruktur:                    adam Maulachela
   ----------------------------------------------------------------------------------------------
 
 ## Tujuan Praktikum
