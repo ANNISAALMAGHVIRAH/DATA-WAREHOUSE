@@ -69,7 +69,8 @@ SELECT version();
 **Hasil eksekusi:**
 
 ``` text
-[Tempelkan hasil query di sini]
+[<img width="290" height="45" alt="image" src="https://github.com/user-attachments/assets/9d97efc5-d160-4559-9302-f3c36e9a6389" />
+]
 ```
 
 **Interpretasi:**
