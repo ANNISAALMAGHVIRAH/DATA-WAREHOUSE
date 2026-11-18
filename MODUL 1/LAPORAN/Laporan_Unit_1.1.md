@@ -13,21 +13,21 @@
   ----------------------------------------------------------------------------------------------
   Identitas                           Keterangan
   ----------------------------------- ----------------------------------------------------------
-  Nama                                Annisa Almaghvirah
+  Nama:                                Annisa Almaghvirah
 
-  NIM                                 240306037
+  NIM:                                240306037
 
-  Program Studi                       Teknologi Informasi
+  Program Studi:                       Teknologi Informasi
 
-  Kelas/Kelompok                      ........................................................
+  Kelas/Kelompok:                      A
 
   Modul                               1
 
   Unit                                1.1
 
-  Tanggal Praktikum                   ........................................................
+  Tanggal Praktikum                  -
 
-  Dosen/Instruktur                    ........................................................
+  Dosen/Instruktur                    adam Maulachela
   ----------------------------------------------------------------------------------------------
 
 ## Tujuan Praktikum
