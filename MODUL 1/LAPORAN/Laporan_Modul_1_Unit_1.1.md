@@ -14,11 +14,11 @@
 | Nama | Annisa Almaghvirah |
 | NIM | 240306037 |
 | Program Studi | Teknologi Informasi |
-| Kelas/Kelompok | A|
+| Kelas/Kelompok | A/2|
 | Modul | 1 |
 | Unit | 1.1 |
-| Tanggal Praktikum | - |
-| Dosen/Instruktur | adam Maulachela |
+| Tanggal Praktikum | 5 November 2026 |
+| Dosen/Instruktur | Adam Bachtiar Maulachela S.Kom., M.MT. |
 
 ## Tujuan Praktikum
 
