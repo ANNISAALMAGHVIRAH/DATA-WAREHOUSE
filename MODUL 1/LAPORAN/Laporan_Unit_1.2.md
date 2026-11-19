@@ -110,7 +110,7 @@ UNION ALL SELECT 'kelulusan', COUNT(*) FROM src.kelulusan;
 
 **Interpretasi**
 
-Tabel terbesar adalah `aktivitas_lms` (200.356 record) yang merupakan log aktivitas LMS, disusul `krs` (57.025) dan `nilai` (57.000). Tabel terkecil adalah `program_studi` (6 record) dan `semester` (8 record) yang berperan sebagai tabel referensi. Pola ini wajar: tabel transaksi berukuran jauh lebih besar daripada tabel master/referensi. Perbedaan `krs` (57.025) dengan `nilai` (57.000) sebanyak 25 record sudah menjadi petunjuk awal adanya duplikasi pada KRS (dibuktikan pada Soal 13–15).
+Berdasarkan hasil pemeriksaan, tabel aktivitas_lms memiliki jumlah data paling banyak, yaitu 200.356 record. Selanjutnya, tabel krs memiliki 57.025 record dan tabel nilai sebanyak 57.000 record. Sementara itu, jumlah data paling sedikit terdapat pada tabel program_studi sebanyak 6 record dan semester sebanyak 8 record. Perbedaan jumlah tersebut menunjukkan bahwa tabel transaksi memiliki volume data lebih besar dibandingkan tabel referensi. Selain itu, terdapat selisih 25 record antara tabel KRS dan nilai yang perlu diperiksa lebih lanjut terkait kemungkinan adanya data ganda.
 
 ## 2.2 Soal 2 — Menghitung jumlah kolom setiap tabel
 
@@ -134,7 +134,7 @@ ORDER BY table_name ASC;
 
 **Interpretasi**
 
-Tabel dengan kolom terbanyak adalah `mahasiswa` (11 kolom) karena memuat banyak atribut deskriptif mentah (`*_raw`), sedangkan yang paling sedikit adalah `program_studi` (5 kolom). Tabel transaksi memiliki 7–9 kolom. Jumlah kolom ini menjadi acuan bahwa struktur tabel hasil impor sesuai dengan definisi pada bahan praktikum.
+Hasil profiling menunjukkan bahwa jumlah kolom pada setiap tabel berbeda-beda, yaitu berkisar antara 5 sampai 11 kolom. Tabel mahasiswa memiliki struktur paling banyak dengan 11 kolom, sedangkan tabel program_studi hanya memiliki 5 kolom. Banyaknya atribut pada tabel mahasiswa menunjukkan bahwa tabel tersebut menyimpan informasi yang lebih beragam. Perbedaan struktur ini masih sesuai dengan fungsi masing-masing tabel dalam database akademik.
 
 ---
 
@@ -162,7 +162,7 @@ FROM src.mahasiswa;
 
 **Interpretasi**
 
-Tabel `mahasiswa` memiliki 1.965 record tetapi hanya 1.950 NIM yang berbeda, sehingga terdapat 15 record berlebih. Artinya NIM **belum terbukti unik** dan terdapat indikasi duplikasi. Namun, hasil ini belum cukup untuk memutuskan penghapusan; perlu diperiksa apakah baris-baris tersebut identik penuh atau merupakan data historis (lihat Soal 4).
+Dari hasil perhitungan, diketahui bahwa jumlah seluruh data mahasiswa adalah 1.965 record, sedangkan jumlah NIM yang berbeda hanya 1.950. Dengan demikian, terdapat selisih 15 record yang menunjukkan adanya NIM dengan kemunculan lebih dari satu kali. Kondisi ini menandakan bahwa kolom NIM belum sepenuhnya memenuhi aspek uniqueness. Pemeriksaan lebih lanjut diperlukan untuk mengetahui apakah pengulangan tersebut merupakan duplikasi data atau memiliki alasan tertentu.
 
 ## 3.2 Soal 4 — Mengidentifikasi NIM duplikat
 
@@ -191,9 +191,8 @@ Hasil query menampilkan **15 baris** (15 NIM), masing-masing muncul 2 kali.
 
 **Interpretasi**
 
-- Jumlah kelompok NIM duplikat: **15**
-- Jumlah kemunculan tertinggi: **2**
-- Catatan: pemeriksaan lanjutan pada profiling menunjukkan seluruh atribut pada baris duplikat sama persis (tidak ada kelompok dengan atribut berbeda), sehingga lebih mengarah pada *exact duplicate* daripada data historis. Meskipun demikian, tindakan penanganan (deduplikasi) tidak dilakukan pada Unit ini dan baru dirancang pada tahap cleaning.
+Hasil pengelompokan menunjukkan terdapat 15 NIM yang tercatat lebih dari satu kali. Setiap NIM tersebut muncul sebanyak dua kali. Berdasarkan pemeriksaan atribut lainnya, data yang berulang memiliki isi yang sama sehingga mengarah pada duplikasi identik (exact duplicate). Temuan ini perlu dicatat sebagai masalah kualitas data, tetapi belum dilakukan penghapusan karena praktikum masih berada pada tahap profiling.
+
 
 ## 3.3 Soal 5 — Memeriksa kelengkapan kota asal mahasiswa
 
@@ -217,7 +216,7 @@ WHERE kota_asal_raw IS NULL
 
 **Interpretasi**
 
-Terdapat **30 record** (30 / 1.965 = **1,53%**) tanpa informasi kota asal. Proporsinya kecil, tetapi analisis sebaran daerah asal mahasiswa menjadi tidak lengkap. Data tidak diimputasi pada tahap profiling; penanganan (misalnya kategori *Unknown*) ditentukan pada tahap ETL.
+Berdasarkan hasil query, ditemukan 30 record mahasiswa yang belum memiliki informasi kota asal. Jumlah tersebut setara dengan sekitar 1,53% dari keseluruhan 1.965 record mahasiswa. Walaupun persentasenya tidak terlalu besar, data kosong tetap dapat memengaruhi analisis berdasarkan wilayah asal mahasiswa. Oleh karena itu, kelengkapan atribut ini perlu diperhatikan pada proses pengolahan data berikutnya.
 
 ## 3.4 Soal 6 — Distribusi mahasiswa berdasarkan program studi (prodi_raw)
 
@@ -244,7 +243,7 @@ ORDER BY jumlah_mahasiswa DESC, prodi_raw;
 
 **Interpretasi**
 
-Terdapat 30 label berbeda untuk hanya 6 program studi. Enam label canonical mencakup 1.530 record, sedangkan 435 record (22,1%) tersebar pada 24 label non-canonical. Label paling banyak adalah *Teknologi Informasi* (286) dan paling sedikit dari yang tercatat adalah *Data Science* (8). Variasi berupa singkatan (IF, TI, DS, BD), penulisan lain (Tek. Informasi, Teknik Informatika, Data Science), dan kapitalisasi (TEKNOLOGI INFORMASI) kemungkinan merujuk program studi yang sama.
+Hasil pengelompokan memperlihatkan bahwa terdapat 30 bentuk penulisan program studi, sementara data referensi hanya menyediakan 6 nama program studi resmi. Sebanyak 1.530 record menggunakan enam label yang sesuai dengan nama resmi, sedangkan 435 record lainnya menggunakan variasi penulisan yang berbeda. Variasi tersebut dapat berupa singkatan, perbedaan penggunaan huruf kapital, maupun penyebutan nama program studi yang berbeda. Hal ini menunjukkan bahwa penulisan atribut program studi belum seragam.
 
 ## 3.5 Soal 7 — Menghitung variasi penulisan program studi
 
@@ -267,7 +266,7 @@ WHERE prodi_raw IS NOT NULL
 
 **Interpretasi**
 
-Ditemukan **30 variasi** penulisan, padahal tabel referensi `program_studi` hanya memuat **6** program studi resmi. Selisih 24 label menunjukkan adanya variasi representasi (inkonsistensi) pada data mahasiswa yang perlu dipetakan (mapping) pada tahap standardisasi.
+Dari hasil query diperoleh sebanyak 30 nilai program studi yang berbeda. Jumlah tersebut lebih banyak dibandingkan enam program studi yang tersedia pada tabel referensi. Artinya, terdapat 24 variasi label tambahan yang belum sesuai dengan penamaan resmi. Perbedaan ini perlu diperhatikan karena dapat menyebabkan data dari program studi yang sama terbaca sebagai kategori yang berbeda ketika dilakukan analisis.
 
 ## 3.6 Soal 8 — Distribusi jenis kelamin (jk_raw)
 
@@ -290,7 +289,7 @@ ORDER BY jumlah_mahasiswa DESC, jk_raw;
 
 **Interpretasi**
 
-Terdapat 6 kode untuk 2 konsep jenis kelamin: `L`, `Laki-laki`, `M` kemungkinan merujuk laki-laki, sedangkan `P`, `Perempuan`, `F` kemungkinan merujuk perempuan. Sebanyak 437 record (22,2%) tidak memakai kode standar L/P. Diperlukan standardisasi pada tahap berikutnya, namun tidak dilakukan pada tabel raw.
+Hasil pemeriksaan menunjukkan terdapat enam bentuk nilai pada kolom jenis kelamin, yaitu L, P, Laki-laki, Perempuan, M, dan F. Nilai-nilai tersebut kemungkinan merepresentasikan dua kategori yang sama, tetapi ditulis menggunakan kode dan istilah yang berbeda. Sebanyak 437 record atau sekitar 22,2% menggunakan bentuk selain kode standar L dan P. Kondisi ini memperlihatkan perlunya penyamaan format kategori agar pengelompokan data menjadi lebih konsisten.
 
 ## 3.7 Soal 9 — Distribusi status mahasiswa (status_raw)
 
@@ -313,7 +312,7 @@ ORDER BY jumlah_record DESC, status_raw;
 
 **Interpretasi**
 
-Ditemukan 6 variasi untuk 3 status bisnis (Aktif, Lulus, Cuti). Variasi muncul karena kapitalisasi (`AKTIF`, `cuti`) dan spasi tambahan (`"Aktif "`). Sebanyak 43 record perlu `TRIM`/penyeragaman kapitalisasi agar kategori tidak terpecah. Tidak ditemukan status kosong.
+Berdasarkan hasil pengelompokan, ditemukan enam variasi penulisan status mahasiswa yang sebenarnya mewakili tiga kategori, yaitu Aktif, Lulus, dan Cuti. Perbedaan tersebut disebabkan oleh penggunaan huruf kapital yang tidak seragam serta adanya spasi tambahan pada beberapa nilai. Terdapat 43 record yang menggunakan penulisan berbeda dari bentuk standar. Dengan demikian, data status mahasiswa masih memerlukan pemeriksaan dan penyeragaman agar tidak menghasilkan kategori yang terpisah.
 
 ## 3.8 Soal 10 — Distribusi kode program studi (kode_prodi_raw)
 
@@ -342,7 +341,7 @@ Nilai yang ditulis dengan tanda kutip memiliki spasi di depan/belakang.
 
 **Interpretasi**
 
-Terdapat 24 variasi untuk 6 kode program studi. Kode paling banyak adalah `IF` (336). Sebanyak 208 record tidak sama persis dengan `program_studi.kode_prodi` karena spasi di depan/belakang (136 record) atau huruf kecil (72 record). Setelah `TRIM` + `UPPER`, seluruh kode cocok dan sesuai dengan kode pada NIM.
+Hasil query menunjukkan terdapat 24 variasi penulisan kode program studi, sedangkan tabel referensi hanya memiliki enam kode resmi. Kode IF merupakan nilai yang paling sering ditemukan dengan jumlah 336 record. Selain itu, terdapat 208 record yang penulisannya berbeda dari kode referensi, yaitu karena tambahan spasi sebanyak 136 record dan penggunaan huruf kecil sebanyak 72 record. Setelah dilakukan pemeriksaan menggunakan konsep TRIM dan UPPER, seluruh kode dapat dicocokkan dengan kode resmi.
 
 ## 3.9 Soal 11 — Nama program studi tidak sesuai standar
 
@@ -369,7 +368,7 @@ WHERE m.prodi_raw IS NOT NULL
 
 **Interpretasi**
 
-Sebanyak **435 record** (22,1%) memiliki `prodi_raw` yang tidak cocok persis dengan nama program studi resmi. Penyebab yang mungkin: singkatan, perbedaan kapitalisasi, spasi, atau penulisan nama lain. Kecocokan persis hanya membuktikan ketidaksamaan teks; penyebab spesifik tiap label perlu diperiksa lebih lanjut sebelum dibuat tabel mapping.
+Dari hasil pemeriksaan, sebanyak 435 record mahasiswa memiliki nama program studi yang tidak sama persis dengan data pada tabel referensi. Jumlah tersebut mencakup sekitar 22,1% dari keseluruhan data mahasiswa. Ketidaksesuaian dapat terjadi karena penggunaan singkatan, perbedaan kapitalisasi, penambahan spasi, atau variasi nama lainnya. Oleh sebab itu, diperlukan pencocokan lebih lanjut untuk memastikan setiap variasi penulisan dapat dihubungkan dengan program studi yang benar.
 
 ## 3.10 Soal 12 — Variasi format tanggal masuk
 
@@ -405,7 +404,7 @@ ORDER BY jumlah_record DESC;
 
 **Interpretasi**
 
-Format dominan adalah `YYYY-MM-DD` (1.429 record, 72,7%). Dua format lain masih ditemukan (346 dan 190 record), sehingga total sekitar 27% record bukan format ISO. Kategori `OTHER` bernilai 0 artinya tidak ada format di luar tiga pola yang diperkirakan. Perlu dicatat bahwa kecocokan pola belum membuktikan tanggal valid secara kalender, dan format `DD/MM/YYYY` berpotensi ambigu dengan `MM/DD/YYYY`.
+Hasil klasifikasi menunjukkan bahwa sebagian besar data tanggal masuk menggunakan format YYYY-MM-DD, yaitu sebanyak 1.429 record atau sekitar 72,7%. Sementara itu, format DD/MM/YYYY ditemukan sebanyak 346 record dan DD-Mon-YYYY sebanyak 190 record. Tidak ditemukan data yang termasuk kategori OTHER. Meskipun seluruh data mengikuti salah satu pola yang diperiksa, penggunaan beberapa format sekaligus dapat menyulitkan proses pengolahan tanggal. Selain itu, kesesuaian pola belum menjamin bahwa tanggal tersebut benar-benar valid.
 
 ---
 
@@ -431,7 +430,8 @@ FROM src.krs;
 
 **Interpretasi**
 
-Jumlah record (57.025) lebih banyak daripada `krs_id` unik (57.000), selisih **25 record**. Ini menunjukkan indikasi duplikasi berdasarkan `krs_id`.
+Berdasarkan hasil perhitungan, tabel KRS mempunyai 57.025 record dengan jumlah krs_id unik sebanyak 57.000. Terdapat perbedaan sebanyak 25 record antara kedua jumlah tersebut. Hal ini menjadi indikasi bahwa beberapa ID KRS digunakan pada lebih dari satu baris. Dengan demikian, keunikan identitas record pada tabel KRS masih perlu diperiksa lebih lanjut.
+
 
 ## 4.2 Soal 14 — Duplikasi pengambilan mata kuliah (nim, kode_mk, semester_id)
 
@@ -462,9 +462,7 @@ Hasil query menampilkan **25 kombinasi** `nim + kode_mk + semester_id`, masing-m
 
 **Interpretasi**
 
-- Jumlah kombinasi yang terindikasi duplikat: **25**
-- Jumlah kemunculan tertinggi untuk satu kombinasi: **2**
-- Catatan: 25 baris tersebut identik penuh (termasuk `krs_id`), sehingga lebih mengarah pada duplikat persis daripada pengambilan di kelas berbeda atau riwayat perubahan status. Dampaknya: peserta kelas dan beban SKS terhitung ganda. Penghapusan tidak dilakukan pada unit ini.
+Hasil pengelompokan data menemukan 25 kombinasi NIM, kode mata kuliah, dan semester yang muncul sebanyak dua kali. Setelah diperiksa, baris-baris tersebut memiliki atribut yang sama, termasuk nilai krs_id. Kondisi ini menunjukkan adanya indikasi penggandaan data yang identik. Jika digunakan langsung dalam analisis, data tersebut berpotensi menyebabkan jumlah peserta mata kuliah dan perhitungan SKS menjadi lebih besar dari kondisi sebenarnya.
 
 ## 4.3 Soal 15 — Kelebihan record KRS akibat duplikasi
 
@@ -490,7 +488,7 @@ FROM (
 
 **Interpretasi**
 
-Total kelebihan record KRS adalah **25**. Karena setiap kelompok duplikat hanya muncul 2 kali (25 kelompok × (2 − 1)), jumlah kelebihan record kebetulan sama dengan jumlah kelompok. Angka ini juga sama dengan selisih 57.025 − 57.000 pada Soal 13, sehingga hasil kedua pemeriksaan konsisten.
+Berdasarkan hasil perhitungan, terdapat 25 record tambahan yang berasal dari kelompok data duplikat. Setiap kelompok memiliki dua baris, sehingga hanya satu baris yang menjadi kelebihan pada masing-masing kelompok. Hasil ini sesuai dengan selisih jumlah seluruh record KRS dan jumlah krs_id unik pada pemeriksaan sebelumnya. Kedua pemeriksaan tersebut memberikan hasil yang saling mendukung mengenai adanya duplikasi pada tabel KRS.
 
 ---
 
@@ -516,7 +514,7 @@ WHERE nilai_angka IS NULL;
 
 **Interpretasi**
 
-Terdapat **20 record** (0,035% dari 57.000) tanpa nilai angka; baris yang sama juga tidak memiliki `nilai_huruf`. Rata-rata nilai, pass rate, dan IPK dapat bias bila baris ini ikut dihitung, sehingga perlu dikeluarkan dari perhitungan KPI atau ditandai belum dinilai.
+Hasil query memperlihatkan bahwa terdapat 20 record pada tabel nilai yang tidak mempunyai nilai angka. Pada baris yang sama, atribut nilai huruf juga tidak terisi. Data tersebut menunjukkan adanya informasi hasil penilaian yang belum lengkap. Apabila digunakan untuk menghitung rata-rata atau indikator akademik lainnya, record tersebut perlu diperlakukan secara khusus agar tidak memengaruhi hasil analisis.
 
 ## 5.2 Soal 17 — Nilai angka di luar rentang 0-100
 
@@ -539,7 +537,8 @@ WHERE nilai_angka IS NOT NULL
 
 **Interpretasi**
 
-Ditemukan **12 record** di luar rentang 0–100: 6 bernilai negatif (nilai minimum −18) dan 6 bernilai lebih dari 100 (nilai maksimum 106). Contoh: `NIL0000320` = 105,0 dan `NIL0032132` = −18,0. Nilai ini melanggar aturan domain dan dapat merusak rata-rata serta pass rate.
+Ditemukan 12 record yang memiliki nilai angka di luar batas penilaian 0 sampai 100. Rinciannya terdiri atas enam nilai negatif dan enam nilai yang melebihi 100. Nilai paling rendah adalah -18, sedangkan nilai paling tinggi mencapai 106. Kondisi tersebut tidak sesuai dengan aturan rentang nilai yang digunakan sehingga perlu ditelusuri untuk mengetahui apakah terjadi kesalahan pencatatan atau faktor lainnya.
+
 
 ## 5.3 Soal 18 — Statistik deskriptif nilai valid
 
@@ -569,7 +568,7 @@ Jumlah valid = 57.000 − 20 (kosong) − 12 (di luar rentang 0–100) = 56.968.
 
 **Interpretasi**
 
-Dari 56.968 nilai valid, nilai terendah adalah 34,8 dan tertinggi 100,0 dengan rata-rata 77,40. Rata-rata yang tinggi dan rentang minimum 34,8 menunjukkan sebagian besar mahasiswa memperoleh nilai di atas batas lulus 60. Interpretasi bersifat deskriptif saja dan tidak menyimpulkan kualitas pembelajaran. Rata-rata tanpa filter (77,39) hampir sama dengan rata-rata valid karena jumlah outlier sangat sedikit (12 baris), tetapi outlier tetap memperlebar min/maks.
+Setelah hanya mengambil nilai dalam rentang 0–100, diperoleh 56.968 record yang memenuhi kriteria valid. Nilai terendah yang ditemukan adalah 34,8 dan nilai tertinggi mencapai 100,0, dengan rata-rata sebesar 77,40. Hasil tersebut memberikan gambaran umum mengenai persebaran nilai mahasiswa. Jika dibandingkan dengan rata-rata tanpa penyaringan, perbedaannya sangat kecil karena jumlah nilai yang berada di luar rentang relatif sedikit.
 
 ## 5.4 Soal 19 — Konsistensi nilai angka dan nilai huruf
 
@@ -606,7 +605,7 @@ WHERE angka BETWEEN 0 AND 100
 
 **Interpretasi**
 
-Ditemukan **20 record** yang nilai hurufnya tidak sesuai dengan hasil konversi nilai angka (hanya nilai valid yang diperiksa). Contoh: `NIL0004118` bernilai 68,2 tetapi tercatat D (seharusnya C), dan `NIL0009299` bernilai 82,8 tercatat B (seharusnya AB). Record ini perlu ditelusuri lebih lanjut untuk menentukan kolom mana yang otoritatif.
+Pemeriksaan menggunakan aturan konversi nilai menunjukkan adanya 20 record yang memiliki perbedaan antara nilai angka dan nilai huruf. Sebagai contoh, nilai 68,2 seharusnya masuk kategori C, tetapi tercatat D. Contoh lainnya adalah nilai 82,8 yang tercatat B, padahal berdasarkan aturan pemeriksaan seharusnya AB. Temuan ini menunjukkan bahwa hubungan antara nilai angka dan nilai huruf belum sepenuhnya konsisten dan perlu dibandingkan kembali dengan ketentuan penilaian resmi.
 
 ## 5.5 Soal 20 — Konsistensi nilai angka dan status kelulusan
 
@@ -638,7 +637,7 @@ Sebagai pembanding, pemeriksaan **nilai_huruf vs status_lulus** pada profiling a
 
 **Interpretasi**
 
-Tidak ditemukan ketidaksesuaian: seluruh 56.968 nilai valid sudah sesuai aturan (≥ 60 berstatus Lulus dan < 60 berstatus Tidak Lulus). Artinya `status_lulus` konsisten dengan `nilai_angka` pada data valid, sehingga 17 ketidakkonsistenan pada pemeriksaan huruf vs status kemungkinan bersumber dari kolom `nilai_huruf` (atau dari nilai di luar rentang yang dikecualikan di sini) dan perlu ditelusuri lebih lanjut. Hasil 0 menunjukkan tidak ada masalah pada pemeriksaan ini, tetapi tidak berarti seluruh kolom nilai bebas masalah.
+Hasil pemeriksaan menghasilkan angka 0, yang berarti tidak ditemukan record dengan status kelulusan yang bertentangan dengan nilai angkanya pada rentang valid. Seluruh data dengan nilai minimal 60 memiliki status Lulus, sedangkan nilai di bawah 60 tercatat Tidak Lulus. Hal ini menunjukkan bahwa atribut status kelulusan sudah sesuai dengan aturan yang digunakan dalam pemeriksaan. Namun, hasil tersebut belum membuktikan bahwa seluruh atribut penilaian sudah benar karena masih terdapat ketidaksesuaian pada nilai huruf.
 
 ## 5.6 Soal 21 — Duplikasi record nilai
 
@@ -691,7 +690,8 @@ WHERE m.nim IS NULL;
 
 **Interpretasi**
 
-Hasilnya **0**: seluruh NIM pada tabel KRS memiliki pasangan pada tabel referensi. Tidak ditemukan record yatim (orphan) sehingga join aman. Integritas referensial pada relasi ini terpenuhi pada pemeriksaan ini.
+Hasil pemeriksaan menghasilkan 0 record yang tidak memiliki pasangan pada tabel mahasiswa. Artinya, seluruh NIM yang digunakan dalam tabel KRS dapat ditemukan pada tabel induknya. Kondisi ini menunjukkan bahwa hubungan data mahasiswa dengan KRS sudah sesuai berdasarkan atribut NIM. Tidak ditemukan data yatim yang dapat menghambat proses penggabungan kedua tabel.
+
 
 ## 6.2 Soal 23 — NIM nilai tidak terdaftar di mahasiswa
 
@@ -788,7 +788,7 @@ FROM src.aktivitas_lms;
 
 **Interpretasi**
 
-Terdapat 30 record berlebih (0,015% dari total). Berdasarkan profiling lanjutan, ke-30 baris identik penuh sehingga terindikasi *exact duplicate* yang membuat jumlah event dan durasi belajar sedikit membengkak.
+Hasil perbandingan menunjukkan terdapat 30 record lebih banyak dibandingkan jumlah lms_event_id yang berbeda. Berdasarkan pemeriksaan lanjutan, seluruh record tambahan tersebut memiliki isi yang sama dengan baris lainnya. Hal ini mengindikasikan adanya duplikasi identik pada aktivitas LMS. Jika tidak diperhatikan, data tersebut dapat menyebabkan jumlah aktivitas dan perhitungan durasi penggunaan LMS menjadi lebih tinggi.
 
 ## 7.2 Soal 27 — Distribusi tipe aktivitas LMS
 
@@ -813,7 +813,8 @@ ORDER BY jumlah DESC, tipe_event;
 
 **Interpretasi**
 
-Terdapat 5 tipe aktivitas. Paling banyak adalah `view_material` (56.040) dan paling sedikit `forum_post` (10.000). Tidak ditemukan variasi penulisan label tipe event. Komposisi menunjukkan mahasiswa lebih banyak membuka materi dan login dibandingkan berpartisipasi di forum.
+Hasil pengelompokan menunjukkan bahwa aktivitas LMS terdiri atas lima jenis event. Aktivitas yang paling sering dilakukan adalah view_material dengan jumlah 56.040 record, sedangkan forum_post merupakan aktivitas dengan jumlah paling sedikit, yaitu 10.000 record. Tidak ditemukan perbedaan penulisan pada label tipe aktivitas. Komposisi ini memperlihatkan bahwa aktivitas membuka materi lebih banyak tercatat dibandingkan aktivitas berpartisipasi dalam forum.
+
 
 ## 7.3 Soal 28 — Skor kuis kosong pada quiz_attempt
 
@@ -836,7 +837,8 @@ WHERE tipe_event = 'quiz_attempt'
 
 **Interpretasi**
 
-Hasilnya **0**: seluruh 40.321 aktivitas `quiz_attempt` memiliki skor kuis, sehingga analisis hasil kuis tidak terganggu oleh nilai kosong.
+Hasil pemeriksaan menunjukkan bahwa tidak ada aktivitas quiz_attempt yang memiliki skor kuis kosong. Dengan kata lain, seluruh 40.321 record percobaan kuis telah dilengkapi informasi skor. Hal ini menunjukkan bahwa kelengkapan atribut skor pada jenis aktivitas tersebut sudah terpenuhi sehingga data dapat digunakan untuk analisis hasil kuis.
+
 
 ## 7.4 Soal 29 — Skor pada aktivitas selain kuis
 
@@ -909,7 +911,7 @@ WHERE nominal_bayar > 0
 
 **Interpretasi**
 
-Terdapat **12 record** (10 berstatus Lunas dan 2 Cicilan) tanpa tanggal pembayaran. Total tanggal kosong pada tabel ini 473, dengan 461 di antaranya berstatus Belum Lunas sehingga wajar kosong. Ke-12 record ini mengganggu analisis ketepatan waktu pembayaran dan perlu dikonfirmasi ke sumber data.
+Hasil query menemukan 12 transaksi dengan nominal pembayaran positif tetapi tidak memiliki tanggal pembayaran. Dari jumlah tersebut, 10 transaksi berstatus Lunas dan dua lainnya berstatus Cicilan. Sementara itu, sebagian besar tanggal pembayaran yang kosong berasal dari transaksi Belum Lunas. Kondisi pada 12 transaksi tersebut perlu dikonfirmasi karena tanggal pembayaran merupakan informasi penting untuk mengetahui waktu terjadinya transaksi.
 
 ## 8.3 Soal 32 — Distribusi status pembayaran
 
@@ -932,7 +934,8 @@ ORDER BY jumlah DESC, status_pembayaran;
 
 **Interpretasi**
 
-Mayoritas transaksi berstatus Lunas (7.962 dari 9.500, sekitar 83,8%), diikuti Cicilan (1.077) dan Belum Lunas (461). Tidak ditemukan variasi penulisan label status.
+Berdasarkan hasil pengelompokan, terdapat tiga kategori status pembayaran. Status Lunas menjadi kategori terbanyak dengan 7.962 record atau sekitar 83,8% dari total transaksi. Selanjutnya, terdapat 1.077 transaksi berstatus Cicilan dan 461 transaksi berstatus Belum Lunas. Hasil tersebut menunjukkan bahwa sebagian besar transaksi sudah diselesaikan, sedangkan sisanya masih dalam proses pembayaran atau belum dibayarkan.
+
 
 ---
 
@@ -1131,30 +1134,30 @@ Hasilnya **0**: seluruh NIM pada kelulusan dapat dihubungkan dengan tabel indukn
 # 12. Kesimpulan Praktikum
 
 1. **Gambaran umum struktur dan ukuran dataset.**
-   Dataset akademik terdiri atas 10 tabel dengan 5–11 kolom per tabel. Tabel transaksi mendominasi ukuran data (`aktivitas_lms` 200.356, `krs` 57.025, `nilai` 57.000 record), sedangkan tabel referensi sangat kecil (`program_studi` 6, `semester` 8).
+  Dataset akademik UADW v1.0 terdiri dari beberapa tabel yang saling berhubungan, antara lain mahasiswa, KRS, nilai, program studi, semester, aktivitas LMS, pembayaran, dan kelulusan. Setiap tabel memiliki jumlah record dan atribut yang berbeda. Tabel aktivitas LMS memiliki jumlah data terbesar, yaitu 200.356 baris, sedangkan tabel program studi memiliki jumlah paling sedikit, yaitu 6 baris. Secara umum, struktur dataset sudah mendukung penyimpanan informasi akademik, tetapi masih ditemukan beberapa kondisi yang perlu diperiksa dari sisi kualitas data.
 
 2. **Aspek kualitas data yang menunjukkan indikasi masalah.**
-   *Uniqueness* (duplikat pada `mahasiswa`, `krs`, `aktivitas_lms`, `kelulusan`), *completeness* (kota asal, nilai angka, tanggal bayar), *validity* (nilai di luar 0–100, nominal pembayaran negatif), dan *consistency* (label program studi, jenis kelamin, status, serta format tanggal yang bervariasi; huruf mutu tidak selalu sesuai nilai angka).
+   Hasil pemeriksaan menunjukkan adanya beberapa masalah kualitas data, yaitu duplikasi record, nilai kosong (missing value), format data yang tidak seragam, perbedaan penulisan kategori, serta nilai yang tidak sesuai dengan rentang yang seharusnya. Contohnya, tabel mahasiswa memiliki 15 kelompok NIM duplikat dan 30 data kota yang kosong. Pada tabel nilai ditemukan 20 nilai numerik kosong dan 12 nilai di luar rentang 0–100. Selain itu, terdapat ketidaksesuaian penulisan program studi, jenis kelamin, status mahasiswa, kode program studi, serta format tanggal.
 
 3. **Tabel dengan temuan paling banyak.**
-   Tabel `mahasiswa` paling banyak temuan karena memuat duplikasi NIM, kota kosong, serta variasi label dan format tanggal. Tabel `nilai` juga perlu perhatian karena menyentuh ukuran utama analisis (nilai kosong, di luar rentang, dan tidak sesuai huruf).
+   Tabel mahasiswa menjadi salah satu tabel yang perlu mendapat perhatian karena memiliki beberapa jenis permasalahan sekaligus, seperti NIM duplikat, data kota kosong, variasi nama program studi, ketidakkonsistenan kategori jenis kelamin dan status, serta perbedaan penulisan kode program studi dan format tanggal. Tabel nilai juga perlu diperiksa lebih lanjut karena terdapat nilai kosong, nilai di luar rentang yang valid, dan ketidaksesuaian antara nilai angka dengan nilai huruf. Sementara itu, tabel aktivitas LMS memiliki jumlah record terbesar dan ditemukan 30 baris duplikat, sehingga perlu diperiksa untuk memastikan setiap aktivitas tercatat dengan benar.
 
 4. **Relasi antar-tabel yang tidak terpenuhi.**
-   Tidak ada. Seluruh pemeriksaan orphan (Soal 22–25 dan 35–38) bernilai 0, sehingga relasi aman digunakan untuk join pada tahap berikutnya.
+   Berdasarkan pemeriksaan integritas referensial, tidak ditemukan data yatim (orphan records) pada relasi yang diuji. Pemeriksaan pada relasi mahasiswa, KRS, nilai, aktivitas LMS, pembayaran, dan kelulusan menunjukkan bahwa data yang diperiksa memiliki referensi yang sesuai dengan tabel terkait. Dengan demikian, hubungan antar-tabel pada aspek yang diuji dapat dikatakan sudah terpenuhi.
 
 5. **Pemeriksaan lanjutan sebelum cleaning, standardisasi, atau deduplikasi.**
-   Konfirmasi skala resmi konversi nilai pada data dictionary, verifikasi kolom otoritatif antara nilai angka, huruf, dan status lulus, pemeriksaan apakah baris duplikat identik penuh atau data historis, penentuan aturan penanganan nilai kosong dan nominal negatif, serta penyusunan tabel mapping label dan aturan parsing tanggal multi-format.
+   Sebelum melakukan perbaikan data, diperlukan pemeriksaan lebih lanjut terhadap setiap record yang terindikasi bermasalah. Pemeriksaan tersebut meliputi validasi identitas mahasiswa yang duplikat, penelusuran penyebab nilai kosong dan nilai di luar rentang, pengecekan kesesuaian kategori dengan data referensi resmi, serta verifikasi format tanggal. Selain itu, perlu dipastikan terlebih dahulu aturan penentuan data yang dianggap benar agar proses cleaning, standardisasi, dan deduplikasi tidak menghilangkan informasi yang masih diperlukan. Seluruh pemeriksaan sebaiknya dilakukan tanpa mengubah data pada source layer.
 
 ## 12.1 Temuan Utama
 
-1. Terdapat duplikat persis pada empat tabel (mahasiswa 15, KRS 25, LMS 30, kelulusan 2 baris berlebih; total 72) yang berisiko menyebabkan *double counting*.
-2. Label kategori pada mahasiswa tidak seragam: 30 label untuk 6 program studi (435 record, 22,1%) dan 6 label untuk 2 jenis kelamin (437 record, 22,2%).
-3. Tiga format tanggal (`YYYY-MM-DD`, `DD/MM/YYYY`, `DD-Mon-YYYY`) digunakan bersamaan; sekitar 27% record pada `tanggal_masuk_raw` bukan format ISO.
-4. Tabel `nilai` memuat 20 nilai kosong, 12 nilai di luar rentang 0–100, dan 20 ketidaksesuaian nilai angka dengan huruf; tabel `pembayaran` memuat 5 nominal negatif dan 12 transaksi positif tanpa tanggal.
-5. Integritas referensial antar-tabel bersih (0 orphan pada seluruh relasi yang diuji), dan seluruh lulusan (347 record, 345 mahasiswa unik) berstatus tepat waktu sehingga tidak ada pembanding mahasiswa terlambat.
+1. Ditemukan duplikasi data identik pada empat tabel, yaitu mahasiswa sebanyak 15, KRS 25, LMS 30, dan kelulusan 2 baris berlebih, dengan total keseluruhan 72 baris. Kondisi ini dapat menimbulkan risiko *double counting* dalam pengolahan data.
+2. Penulisan kategori pada tabel mahasiswa masih belum konsisten. Terdapat 30 variasi label untuk 6 program studi yang memengaruhi 435 record (22,1%), serta 6 variasi label untuk 2 jenis kelamin yang ditemukan pada 437 record (22,2%).
+3. Data tanggal masih menggunakan tiga bentuk penulisan, yaitu `YYYY-MM-DD`, `DD/MM/YYYY`, dan `DD-Mon-YYYY`. Sekitar 27% data pada kolom `tanggal_masuk_raw` belum menggunakan format ISO.
+4. Pada tabel `nilai` ditemukan 20 data nilai kosong, 12 nilai yang berada di luar batas 0–100, serta 20 data yang tidak sesuai antara nilai angka dan nilai huruf. Sementara itu, tabel `pembayaran` memiliki 5 transaksi dengan nominal negatif dan 12 transaksi bernilai positif yang belum memiliki tanggal pembayaran.
+5. Hasil pemeriksaan menunjukkan bahwa seluruh relasi antar-tabel yang diuji tidak memiliki data *orphan* (0 data). Selain itu, seluruh lulusan yang tercatat, yaitu 347 record dari 345 mahasiswa unik, memiliki status lulus tepat waktu. Dengan demikian, tidak tersedia data mahasiswa terlambat sebagai pembanding.
 
 ## 12.2 Rekomendasi Pemeriksaan Lanjutan
 
-1. Konfirmasi ke pemilik data (dosen/bagian akademik) skala konversi nilai resmi dan kolom otoritatif untuk nilai angka, huruf, dan status lulus.
-2. Verifikasi seluruh baris duplikat (mahasiswa, KRS, LMS, kelulusan) terhadap atribut lain untuk memastikan tidak ada data historis sebelum merancang aturan deduplikasi di staging.
-3. Susun tabel mapping label (program studi, jenis kelamin, status) dan satu aturan parsing multi-format tanggal untuk tahap transformasi, serta konfirmasi ke bagian keuangan atas 5 nominal negatif dan 12 tanggal bayar kosong.
+1. Melakukan validasi data duplikat. Periksa kembali record yang terindikasi duplikat pada tabel mahasiswa, KRS, aktivitas LMS, dan kelulusan. Pastikan apakah duplikasi tersebut merupakan pencatatan berulang atau memang memiliki makna berbeda sebelum menentukan tindakan deduplikasi.
+2. Memeriksa kelengkapan dan validitas nilai. Telusuri penyebab data kosong, nilai di luar rentang, nominal pembayaran negatif, serta transaksi tanpa tanggal. Pemeriksaan perlu dilakukan dengan membandingkan data terhadap sumber atau dokumen referensi yang tersedia.
+3. Menyiapkan aturan standardisasi dan validasi data. Tentukan format penulisan yang konsisten untuk nama program studi, jenis kelamin, status mahasiswa, kode program studi, dan tanggal. Gunakan referensi resmi sebagai acuan, kemudian lakukan pengujian aturan tersebut pada salinan data atau tahap staging sebelum diterapkan pada proses cleaning berikutnya.
