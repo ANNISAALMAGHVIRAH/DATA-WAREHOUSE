@@ -1,754 +1,821 @@
 # LAPORAN MODUL 1 UNIT 1.3
-## PENERJEMAHAN KEBUTUHAN BISNIS MENJADI KEBUTUHAN ANALITIK
 
-### Identitas Laporan
+## Identitas Laporan
 
-Nama : Annisa Almaghvirah  
+Nama : Annisa Almaghvirah 
 NIM : 240306037  
+Kelas : A  
+Kelompok : 4  
 Program Studi : Teknologi Informasi  
 Modul : 1  
 Unit : 1.3  
-Tanggal Praktikum : [Isi tanggal]
-
-### Studi Kasus
-
-Universitas Digital Nusantara menemukan bahwa evaluasi akademik masih banyak dilakukan secara terpisah oleh masing-masing program studi. Kaprodi dapat melihat nilai mahasiswa, tetapi belum memiliki informasi terintegrasi untuk mengetahui mata kuliah yang paling sering menjadi hambatan, mahasiswa yang membutuhkan pendampingan lebih awal, hubungan aktivitas pembelajaran melalui LMS dengan hasil nilai, serta pola kelulusan tepat waktu.
-
-Wakil Rektor Bidang Akademik meminta tim Data Warehouse menyiapkan dasar kebutuhan analitik untuk mendukung peningkatan keberhasilan studi dan kelulusan tepat waktu. Pada tahap ini, tim belum diminta membangun Star Schema atau ETL. Fokus Unit 1.3 adalah menerjemahkan permasalahan bisnis menjadi kebutuhan informasi dan kebutuhan data yang dapat ditelusuri ke dataset UADW v1.0.
-
-Keputusan yang akan didukung meliputi:
-1. Menentukan mata kuliah yang perlu mendapatkan evaluasi atau program remedial.
-2. Mengidentifikasi kelompok mahasiswa yang membutuhkan pendampingan akademik lebih awal.
-3. Menentukan program studi dan angkatan yang menunjukkan penurunan performa akademik.
-4. Mengevaluasi apakah aktivitas LMS dapat digunakan sebagai indikator pendukung risiko akademik.
-5. Mengevaluasi pola kelulusan tepat waktu berdasarkan program studi dan angkatan.
-
-Batas kasus: fokus utama analisis adalah keberhasilan akademik dan kelulusan tepat waktu. Data pembayaran tidak digunakan sebagai kebutuhan utama pada Unit 1.3.
+Tanggal Praktikum : 5 November 2026  
 
 ---
 
+## Studi Kasus
+
+Universitas Digital Nusantara menemukan bahwa proses evaluasi akademik masih dilakukan secara terpisah oleh setiap program studi. Kaprodi memang dapat mengakses nilai mahasiswa, tetapi belum tersedia informasi yang terintegrasi untuk mengetahui mata kuliah yang sering menjadi kendala, kelompok mahasiswa yang membutuhkan pendampingan lebih awal, keterkaitan aktivitas LMS dengan hasil akademik, serta faktor yang berkaitan dengan keterlambatan kelulusan.
+
+Wakil Rektor Bidang Akademik kemudian meminta tim Data Warehouse menyiapkan kebutuhan informasi dan data sebagai dasar pengembangan analitik untuk meningkatkan keberhasilan studi serta kelulusan tepat waktu. Pada tahap ini, tim belum diminta membuat Star Schema maupun ETL. Fokus Unit 1.3 adalah mengidentifikasi kebutuhan informasi dan data berdasarkan dataset UADW v1.0.
+
+Keputusan yang ingin didukung meliputi:
+- Menentukan mata kuliah yang membutuhkan evaluasi atau program remedial.
+- Mengidentifikasi kelompok mahasiswa yang perlu memperoleh pendampingan akademik lebih awal.
+- Menemukan periode, angkatan, atau program studi yang mengalami penurunan performa.
+- Menilai hubungan aktivitas LMS dengan risiko akademik mahasiswa.
+- Mengamati pola yang berkaitan dengan kelulusan tepat waktu.
+
+Batas kasus: pembahasan difokuskan pada keberhasilan akademik dan kelulusan tepat waktu. Data pembayaran tidak digunakan dalam laporan ini.
+
 ## 1. Identifikasi Stakeholder
 
-Langkah pertama adalah menentukan pihak-pihak yang berkepentingan terhadap informasi akademik yang akan dihasilkan. Stakeholder yang berhasil diidentifikasi adalah sebagai berikut.
+Tahap awal dalam menganalisis kebutuhan bisnis adalah mengenali pihak-pihak yang berkepentingan terhadap informasi akademik. Setiap stakeholder mempunyai kebutuhan informasi dan kewenangan keputusan yang berbeda. Hasil identifikasinya adalah sebagai berikut:
 
 | Stakeholder | Information Need | Decision Supported | Priority |
 |---|---|---|---|
-| Wakil Rektor Bidang Akademik | Informasi performa akademik dan kelulusan tepat waktu secara keseluruhan berdasarkan program studi dan angkatan | Menentukan kebijakan peningkatan keberhasilan studi dan kelulusan tepat waktu | High |
-| Kepala Program Studi (Kaprodi) | Informasi mata kuliah dengan tingkat ketidaklulusan tinggi, perkembangan nilai, dan pola kelulusan mahasiswa | Menentukan mata kuliah yang perlu dievaluasi atau diberikan program remedial | High |
-| Dosen Pengampu | Informasi sebaran nilai, tingkat ketidaklulusan, serta aktivitas mahasiswa pada LMS | Mengevaluasi metode pengajaran, materi pembelajaran, dan proses penilaian | Medium |
-| Dosen Pembimbing Akademik / Bagian Akademik | Informasi mahasiswa yang memiliki nilai rendah atau beberapa mata kuliah tidak lulus | Menentukan mahasiswa yang perlu memperoleh pendampingan akademik lebih awal | Medium |
-| Tim Data Warehouse | Informasi kualitas, kelengkapan, dan kesiapan data sumber | Menentukan prioritas pemeriksaan data dan kandidat model analitik | Medium |
+| Wakil Rektor Bidang Akademik | Informasi menyeluruh mengenai hasil akademik dan kelulusan tepat waktu dari seluruh program studi dan angkatan | Menyusun kebijakan untuk meningkatkan keberhasilan studi dan kelulusan mahasiswa | High |
+| Kepala Program Studi (Kaprodi) | Informasi mata kuliah dengan kegagalan tinggi, perkembangan nilai mahasiswa, serta tingkat kelulusan tepat waktu | Menentukan mata kuliah yang perlu dievaluasi dan kelompok akademik yang membutuhkan perhatian | High |
+| Dosen Pengampu / Koordinator Mata Kuliah | Informasi distribusi nilai, jumlah mahasiswa tidak lulus, dan aktivitas pembelajaran melalui LMS | Memperbaiki proses pembelajaran, metode penilaian, dan materi perkuliahan | Medium |
+| Dosen Pembimbing Akademik / Bagian Akademik | Informasi kelompok mahasiswa yang memiliki nilai rendah atau keterlibatan LMS yang minim | Menentukan mahasiswa yang perlu memperoleh bimbingan akademik lebih awal | Medium |
+| Tim Data Warehouse | Informasi mengenai kondisi, kelengkapan, dan kesiapan data akademik | Menetapkan prioritas perbaikan data dan menentukan kandidat model analitik | Medium |
 
 ## 2. Problem Statement
 
-Berdasarkan studi kasus, pertanyaan pemantik dijawab sebagai berikut.
+Berdasarkan permasalahan dalam studi kasus, berikut jawaban dari pertanyaan pemantik yang digunakan untuk merumuskan problem statement.
 
-**1. Bagaimana kondisi sekarang? (Kondisi)**
+1. Bagaimana kondisi sekarang? [Kondisi]
 
-Evaluasi akademik masih dilakukan secara terpisah oleh masing-masing program studi. Informasi mahasiswa, KRS, nilai, aktivitas LMS, dan kelulusan tersedia dalam tabel sumber yang berbeda sehingga belum memberikan gambaran akademik secara menyeluruh.
+   > Evaluasi hasil akademik masih dilaksanakan secara terpisah oleh masing-masing program studi. Informasi nilai, KRS, aktivitas LMS, dan data kelulusan belum tersedia dalam satu sumber informasi yang terintegrasi.
 
-**2. Apa yang belum dapat dilakukan? (Masalah)**
+2. Apa yang belum dapat dilakukan? [Masalah]
 
-Universitas belum memiliki informasi terintegrasi untuk mengidentifikasi mata kuliah dengan tingkat ketidaklulusan tinggi, menentukan mahasiswa yang membutuhkan pendampingan lebih awal, melihat hubungan aktivitas LMS dengan hasil nilai, serta membandingkan pola kelulusan tepat waktu berdasarkan program studi dan angkatan.
+   > Universitas belum dapat mengidentifikasi mata kuliah dengan tingkat kegagalan tinggi secara menyeluruh, mendeteksi kelompok mahasiswa yang berpotensi mengalami masalah akademik, mengukur keterkaitan aktivitas LMS dengan nilai, serta menganalisis pola kelulusan mahasiswa.
 
-**3. Apa akibatnya bagi organisasi? (Dampak)**
+3. Apa akibatnya bagi organisasi? [Dampak]
 
-Proses evaluasi akademik menjadi kurang efektif karena pihak universitas kesulitan menentukan prioritas perbaikan pembelajaran. Pendampingan kepada mahasiswa juga berpotensi terlambat, sementara program peningkatan kelulusan tepat waktu belum dapat ditentukan berdasarkan informasi yang menyeluruh.
+   > Pemberian pendampingan kepada mahasiswa berisiko dapat terlambat, penanganan mata kuliah bermasalah menjadi kurang terarah, dan pimpinan kesulitan menentukan kebijakan peningkatan kelulusan berdasarkan informasi yang konsisten.
 
-**4. Informasi apa yang dibutuhkan untuk memperbaiki kondisi tersebut? (Kebutuhan Analitik)**
+4. Informasi apa yang dibutuhkan untuk memperbaiki kondisi tersebut? [Kebutuhan Analitik]
 
-Diperlukan informasi mengenai persentase ketidaklulusan setiap mata kuliah, perkembangan performa akademik berdasarkan program studi dan semester, persentase kelulusan tepat waktu, serta pola hubungan antara aktivitas LMS dengan hasil nilai mahasiswa.
+   > Dibutuhkan informasi mengenai persentase ketidaklulusan setiap mata kuliah, perkembangan performa akademik berdasarkan program studi dan angkatan, persentase kelulusan tepat waktu, serta hubungan aktivitas LMS dengan hasil nilai mahasiswa.
 
-**Problem Statement**
+Untuk menyusun pernyataan masalah digunakan pendekatan:
 
-Saat ini evaluasi akademik masih dilakukan secara terpisah oleh masing-masing program studi, tetapi universitas belum memiliki informasi terintegrasi untuk mengetahui mata kuliah yang memiliki tingkat ketidaklulusan tinggi, mahasiswa yang membutuhkan pendampingan lebih awal, hubungan aktivitas LMS dengan hasil nilai, serta pola kelulusan tepat waktu. Akibatnya, proses evaluasi dan pemberian intervensi akademik belum dapat dilakukan secara optimal. Oleh karena itu, diperlukan analisis terintegrasi terhadap data mahasiswa, KRS, nilai, aktivitas LMS, dan kelulusan agar pihak universitas dapat menentukan keputusan berdasarkan informasi akademik yang lebih lengkap.
+**Current Condition → Problem → Impact → Analytical Need**
+
+Sehingga **Problem Statement** yang diperoleh adalah:
+
+> Saat ini proses evaluasi akademik masih berjalan secara terpisah di setiap program studi, sehingga universitas belum mempunyai gambaran menyeluruh mengenai kondisi akademik mahasiswa. Akibatnya, identifikasi mata kuliah bermasalah, pemberian pendampingan kepada mahasiswa, dan evaluasi kelulusan tepat waktu belum dapat dilakukan secara optimal. Oleh karena itu, diperlukan analisis terintegrasi terhadap data KRS, nilai, aktivitas LMS, dan kelulusan untuk menghasilkan informasi mengenai tingkat ketidaklulusan, perkembangan performa akademik, keterlibatan mahasiswa dalam pembelajaran, serta ketepatan waktu penyelesaian studi.
 
 ## 3. Business Process
 
-Business Process disusun menggunakan rumus:
+Business Process digunakan untuk menggambarkan aktivitas utama yang menghasilkan data dalam kegiatan akademik. Penyusunannya memperhatikan hubungan antara kegiatan, pelaku, objek, dan waktu pelaksanaan.
 
-**Actor melakukan Event terhadap Object pada Time.**
+**Business Process = Event/Kegiatan Bisnis + Actor + Object + Time**
 
-**1. Kejadian bisnis apa yang menghasilkan data?**
+1. **Kejadian bisnis apa yang menghasilkan data**
 
-Kegiatan bisnis yang menghasilkan data meliputi pengambilan mata kuliah melalui KRS, pemberian nilai akhir mahasiswa, aktivitas pembelajaran melalui LMS, dan pencatatan kelulusan mahasiswa.
+   > Aktivitas yang menghasilkan data meliputi proses pengisian KRS, pemberian nilai akhir mata kuliah, kegiatan pembelajaran melalui LMS, dan pencatatan kelulusan mahasiswa.
 
-**2. Siapa aktor yang berperan?**
+2. **Siapa aktor yang berperan**
 
-Aktor yang terlibat adalah mahasiswa, dosen pengampu, dosen pembimbing akademik, bagian akademik, dan sistem LMS.
+   > Pihak yang terlibat yaitu mahasiswa, dosen pengampu, bagian akademik, serta sistem Learning Management System (LMS).
 
-**3. Apa yang menjadi objek dari studi kasus?**
+3. **Apa yang menjadi objek dari studi kasus**
 
-Objek yang dianalisis meliputi mata kuliah yang diambil mahasiswa, hasil penilaian akademik, aktivitas pembelajaran melalui LMS, serta status dan informasi kelulusan mahasiswa.
+   > Objek yang dianalisis meliputi mata kuliah yang diambil mahasiswa, hasil penilaian, aktivitas pembelajaran melalui LMS, dan status penyelesaian studi.
 
-**4. Kapan kejadian bisnis terjadi?**
+4. **Kapan kejadian bisnis terjadi**
 
-Kegiatan KRS dan penilaian berlangsung pada setiap semester. Aktivitas LMS tercatat selama proses pembelajaran berlangsung, sedangkan pencatatan kelulusan dilakukan ketika mahasiswa telah menyelesaikan persyaratan akademik.
+   > Data akademik mencakup semester 2021 Ganjil sampai 2024 Genap. Aktivitas LMS tercatat pada 15 Agustus 2021 sampai 10 Juni 2025, sedangkan data kelulusan tercatat pada Juni 2025.
 
-Berdasarkan proses tersebut, domain bisnis yang berhasil diidentifikasi adalah:
+Sehingga proses bisnis yang berhasil diidentifikasi pada domain berikut adalah:
 
-**1. KRS**
+1. **KRS**
 
-Mahasiswa melakukan pengambilan mata kuliah yang ditawarkan pada awal semester. Kegiatan tersebut menghasilkan data mengenai mahasiswa, mata kuliah yang dipilih, semester, kelas, dan status pengambilan mata kuliah.
+   > Mahasiswa melakukan pemilihan dan pengambilan mata kuliah yang tersedia pada awal semester. Aktivitas tersebut menghasilkan catatan mata kuliah yang diambil berdasarkan `tanggal_ambil_raw` dan `semester_id`.
 
-**2. Penilaian**
+2. **Penilaian**
 
-Dosen pengampu memberikan nilai akhir kepada mahasiswa berdasarkan hasil pembelajaran pada mata kuliah tertentu. Nilai tersebut dicatat dalam bentuk nilai angka, nilai huruf, dan status kelulusan pada setiap semester.
+   > Dosen pengampu melakukan penilaian terhadap mahasiswa berdasarkan hasil pembelajaran pada mata kuliah tertentu. Hasil akhirnya dicatat dalam bentuk nilai angka, nilai huruf, dan status kelulusan pada akhir semester melalui `tanggal_input_raw` dan `semester_id`.
 
-**3. Aktivitas Pembelajaran LMS**
+3. **Aktivitas Pembelajaran LMS**
 
-Mahasiswa melakukan aktivitas pembelajaran melalui LMS, seperti login, melihat materi, mengirim tugas, mengerjakan kuis, dan berpartisipasi dalam forum selama periode perkuliahan. Aktivitas tersebut menghasilkan catatan mengenai waktu, jenis kegiatan, durasi, dan skor kuis jika tersedia.
+   > Mahasiswa menggunakan LMS untuk melaksanakan kegiatan pembelajaran, seperti login, melihat materi, mengumpulkan tugas, mengerjakan kuis, dan berpartisipasi dalam forum selama masa perkuliahan.
 
-**4. Kelulusan**
+4. **Kelulusan**
 
-Bagian akademik mencatat mahasiswa yang telah menyelesaikan studi beserta informasi tanggal kelulusan, IPK akhir, masa studi, predikat, dan status ketepatan waktu kelulusan.
+   > Bagian akademik mencatat mahasiswa yang telah menyelesaikan seluruh persyaratan studi. Informasi yang dihasilkan mencakup IPK akhir, masa studi, predikat kelulusan, dan status tepat waktu berdasarkan `tanggal_lulus_raw`.
 
 ## 4. Business Objective
 
-Business Objective menjelaskan tujuan yang ingin dicapai oleh universitas berdasarkan permasalahan yang telah diidentifikasi.
+Business Objective merupakan sasaran yang ingin diwujudkan organisasi melalui pemanfaatan informasi analitik. Berdasarkan permasalahan yang ditemukan, tujuan bisnis dirumuskan sebagai berikut:
 
-Tujuan bisnis yang dirumuskan adalah:
+**Business Objective:**
 
-**BO01** — Meningkatkan kemampuan program studi dalam mengidentifikasi mata kuliah yang memiliki tingkat ketidaklulusan tinggi agar evaluasi pembelajaran dan program remedial dapat dilakukan secara tepat.
-
-**BO02** — Memperkuat pemantauan performa akademik mahasiswa agar mahasiswa yang berisiko mengalami kesulitan akademik dapat diketahui dan memperoleh pendampingan lebih awal.
-
-**BO03** — Mengevaluasi pola kelulusan tepat waktu berdasarkan program studi dan angkatan agar universitas dapat menyusun program peningkatan keberhasilan studi.
-
-**BO04** — Mengevaluasi hubungan aktivitas pembelajaran melalui LMS dengan hasil nilai akademik agar aktivitas LMS dapat dipertimbangkan sebagai indikator pendukung pemantauan performa mahasiswa.
+> **BO01** — Meningkatkan kemampuan program studi dalam menemukan mata kuliah dengan hasil akademik rendah agar evaluasi pembelajaran dan kegiatan remedial dapat dilakukan secara terarah.
+>
+> **BO02** — Memperkuat kemampuan universitas dalam mengenali mahasiswa dan kelompok akademik yang berisiko agar pendampingan dapat diberikan sebelum masalah akademik semakin besar.
+>
+> **BO03** — Mengevaluasi kondisi kelulusan tepat waktu agar universitas dapat menyusun strategi untuk meningkatkan keberhasilan penyelesaian studi.
+>
+> **BO04** — Mengkaji keterkaitan aktivitas pembelajaran LMS dengan hasil nilai agar tingkat keterlibatan mahasiswa dapat dimanfaatkan sebagai informasi tambahan dalam mendeteksi risiko akademik.
 
 ## 5. Decision Requirement
 
-Decision Requirement menjelaskan keputusan yang perlu dibuat oleh stakeholder berdasarkan informasi yang tersedia.
+Decision Requirement menjelaskan keputusan yang perlu diambil oleh stakeholder berdasarkan informasi analitik yang tersedia. Penyusunannya menggunakan pola:
 
-Kebutuhan keputusan yang dirumuskan adalah:
+**[Stakeholder] perlu menentukan [keputusan] berdasarkan [informasi].**
 
-**DR01** — Kaprodi perlu menentukan mata kuliah yang memiliki tingkat ketidaklulusan tinggi berdasarkan persentase ketidaklulusan pada setiap semester.
+Berdasarkan kebutuhan tersebut, diperoleh beberapa Decision Requirement berikut:
 
-**DR02** — Wakil Rektor Bidang Akademik perlu menentukan program studi dan angkatan yang membutuhkan program peningkatan akademik berdasarkan perubahan persentase ketidaklulusan dan hasil performa mahasiswa.
-
-**DR03** — Wakil Rektor Bidang Akademik perlu mengevaluasi program studi dan angkatan berdasarkan persentase kelulusan tepat waktu serta rata-rata masa studi mahasiswa.
-
-**DR04** — Dosen Pengampu dan Kaprodi perlu menentukan apakah aktivitas LMS layak digunakan sebagai indikator pendukung risiko akademik berdasarkan pola hubungan aktivitas pembelajaran dengan nilai mahasiswa.
-
-**DR05** — Dosen Pembimbing Akademik dan Bagian Akademik perlu menentukan kelompok mahasiswa yang membutuhkan pendampingan berdasarkan perbedaan hasil nilai semester awal dan predikat kelulusan.
+> **DR01** — Kaprodi perlu memilih mata kuliah yang menjadi prioritas evaluasi berdasarkan persentase mahasiswa yang tidak lulus pada setiap mata kuliah dan semester.
+>
+> **DR02** — Wakil Rektor Bidang Akademik perlu menetapkan program studi dan angkatan yang membutuhkan program peningkatan akademik berdasarkan perkembangan persentase ketidaklulusan serta tingkat kelulusan tepat waktu.
+>
+> **DR03** — Dosen Pembimbing Akademik dan Bagian Akademik perlu menentukan kelompok mahasiswa yang membutuhkan pendampingan berdasarkan perbedaan hasil nilai semester awal pada setiap kelompok predikat kelulusan serta perbandingan lulusan tepat waktu dan terlambat apabila datanya tersedia.
+>
+> **DR04** — Dosen Pengampu dan Kaprodi perlu memutuskan kelayakan aktivitas LMS sebagai indikator tambahan risiko akademik berdasarkan pola keterkaitannya dengan nilai mahasiswa.
 
 ## 6. Analytical Questions
 
-Analytical Question disusun menggunakan rumus:
+Analytical Questions dibuat untuk mengubah kebutuhan keputusan menjadi pertanyaan yang dapat dijawab menggunakan data dan pengukuran tertentu. Penyusunannya memperhatikan metric, dimension, time, dan comparison.
 
-**Metric + Dimension + Time + Comparison**
+Empat pola pertanyaan yang digunakan adalah:
 
-Pertanyaan analitis dibuat menggunakan pola trend, comparison, ranking, dan relationship.
+1. **Trend**
 
-**1. Trend**
+   > Bagaimana perkembangan persentase ketidaklulusan berdasarkan program studi mulai semester 2021G hingga semester 2024E?
 
-Bagaimana perubahan persentase ketidaklulusan mahasiswa berdasarkan program studi dari semester 2021G sampai semester 2024E?
+2. **Comparison**
 
-**2. Comparison**
+   > Bagaimana perbedaan persentase kelulusan tepat waktu antara program studi A dan program studi B?
 
-Bagaimana perbedaan persentase kelulusan tepat waktu dan rata-rata masa studi antarprogram studi pada kelompok mahasiswa yang telah lulus?
+3. **Ranking**
 
-**3. Ranking**
+   > Mata kuliah apa yang menempati posisi tertinggi berdasarkan persentase ketidaklulusan pada masing-masing semester?
 
-Mata kuliah apa yang memiliki persentase ketidaklulusan tertinggi pada setiap semester?
+4. **Relationship**
 
-**4. Relationship**
+   > Bagaimana keterkaitan antara jumlah atau durasi aktivitas LMS dengan nilai angka mahasiswa pada mata kuliah yang diikuti?
 
-Bagaimana pola hubungan antara jumlah atau durasi aktivitas LMS dengan nilai angka mahasiswa pada mata kuliah yang sama?
-
-**5. Comparison**
-
-Bagaimana perbedaan rata-rata nilai angka pada semester awal antara mahasiswa dengan kelompok predikat kelulusan yang berbeda?
-
-Berdasarkan pertanyaan tersebut, Analytical Question dapat dirangkum sebagai berikut.
+Sehingga Analytical Questions dapat dirangkum dalam tabel berikut:
 
 | AQ | Analytical Question | Stakeholder | Decision | Priority |
 |---|---|---|---|---|
-| AQ01 | Mata kuliah apa yang memiliki persentase ketidaklulusan tertinggi pada setiap semester? (Ranking) | Kaprodi | DR01 | High |
-| AQ02 | Bagaimana perubahan persentase ketidaklulusan setiap program studi dari semester 2021G sampai 2024E? (Trend) | Wakil Rektor Bidang Akademik | DR02 | High |
-| AQ03 | Bagaimana perbedaan persentase kelulusan tepat waktu dan rata-rata masa studi antarprogram studi? (Comparison) | Wakil Rektor Bidang Akademik dan Kaprodi | DR03 | High |
-| AQ04 | Bagaimana pola hubungan antara jumlah atau durasi aktivitas LMS dengan nilai angka mahasiswa pada setiap mata kuliah? (Relationship) | Dosen Pengampu dan Kaprodi | DR04 | Medium |
-| AQ05 | Bagaimana perbedaan rata-rata nilai angka pada semester awal antar kelompok predikat kelulusan? (Comparison) | Dosen Pembimbing Akademik dan Bagian Akademik | DR05 | High |
+| AQ01 | Mata kuliah apa yang mempunyai persentase ketidaklulusan paling tinggi pada setiap semester? (Ranking) | Kaprodi | DR01 | High |
+| AQ02 | Bagaimana perkembangan persentase ketidaklulusan pada setiap program studi dari semester 2021G sampai 2024E? (Trend) | Wakil Rektor Bidang Akademik | DR02 | High |
+| AQ03 | Bagaimana perbandingan persentase kelulusan tepat waktu dan rata-rata masa studi pada setiap program studi? (Comparison) | Wakil Rektor Bidang Akademik; Kaprodi | DR02 | High |
+| AQ04 | Apakah terdapat pola hubungan antara jumlah atau total durasi aktivitas LMS dengan nilai angka mahasiswa pada masing-masing mata kuliah? (Relationship) | Dosen Pengampu; Kaprodi | DR04 | Medium |
+| AQ05 | Bagaimana perbedaan rata-rata nilai angka pada semester awal jika dilihat berdasarkan kelompok predikat kelulusan mahasiswa? (Comparison) | Dosen Pembimbing Akademik / Bagian Akademik | DR03 | High |
 
 ## 7. Key Performance Indicator (KPI)
 
-KPI disusun menggunakan pendekatan *top-down* dengan alur:
+KPI digunakan untuk mengukur pencapaian tujuan bisnis melalui indikator yang dapat dihitung dan dibandingkan. Penyusunannya mengikuti pendekatan Top-Down, yaitu dimulai dari Business Objective, Decision Requirement, Analytical Question, pemilihan metrik yang adil, kemudian formulasi KPI.
 
-**Business Objective → Decision Requirement → Analytical Question → Memilih Bentuk Metrik yang Adil → Formulasi KPI.**
+**Alur penyusunan:**
 
-### KPI01 — Course Failure Rate
+Business Objective → Decision Requirement → Analytical Questions → Memilih Bentuk Metriks yang Adil → Formulasi KPI.
 
-**Business Objective (BO01)** = Meningkatkan kemampuan program studi dalam mengidentifikasi mata kuliah yang memiliki tingkat ketidaklulusan tinggi.
+### 1. KPI Course Failure Rate
 
-**Decision Requirement (DR01)** = Kaprodi perlu menentukan mata kuliah yang memiliki tingkat ketidaklulusan tinggi berdasarkan persentase ketidaklulusan pada setiap semester.
+**Business Objective (BO01)** = Meningkatkan kemampuan program studi dalam mengidentifikasi mata kuliah yang memiliki hasil akademik rendah.
 
-**Analytical Question (AQ01)** = Mata kuliah apa yang memiliki persentase ketidaklulusan tertinggi pada setiap semester?
+**Decision Requirement (DR01)** = Kaprodi perlu memilih mata kuliah yang mempunyai persentase ketidaklulusan tinggi secara konsisten.
 
-**1. Membedah tujuan bisnis (BO01)**
+**Analytical Question (AQ01)** = Mata kuliah apa yang mempunyai persentase ketidaklulusan paling tinggi pada setiap semester?
 
-Kata kunci dari tujuan bisnis ini adalah performa mata kuliah. Performa mata kuliah dapat dilihat dari keberhasilan mahasiswa dalam memenuhi standar kelulusan. Apabila persentase mahasiswa yang tidak lulus cukup tinggi, mata kuliah tersebut perlu mendapatkan perhatian dan evaluasi.
+Berdasarkan ketiga komponen tersebut, penyusunan KPI dilakukan melalui tahapan berikut:
 
-**2. Menangkap kebutuhan keputusan (DR01)**
+1. **Menganalisis tujuan bisnis (BO01)**
 
-Kaprodi membutuhkan informasi yang dapat menunjukkan mata kuliah dengan tingkat ketidaklulusan tinggi. Informasi tersebut dapat digunakan untuk menentukan mata kuliah yang perlu dievaluasi atau diberikan program remedial.
+   **Pernyataan:** Meningkatkan kemampuan program studi dalam menemukan mata kuliah dengan hasil akademik rendah.
 
-**3. Menerjemahkan ke pertanyaan analitis (AQ01)**
+   Fokus utama dari tujuan tersebut adalah kondisi performa mata kuliah. Performa yang rendah dapat diketahui melalui banyaknya mahasiswa yang tidak berhasil memenuhi standar kelulusan.
 
-- Measure: Jumlah mahasiswa tidak lulus dan total mahasiswa yang memiliki nilai akhir.
-- Dimension: Mata kuliah dan program studi.
-- Time: Semester dan tahun akademik.
-- Cara analisis: Membandingkan dan mengurutkan persentase ketidaklulusan dari yang tertinggi.
+   **Informasi yang ingin diperoleh:** Mata kuliah yang mempunyai jumlah atau proporsi mahasiswa gagal paling tinggi sehingga dapat menjadi prioritas evaluasi.
 
-**4. Memilih bentuk metrik yang adil**
+2. **Mengidentifikasi kebutuhan keputusan (DR01)**
 
-Metrik yang digunakan adalah persentase ketidaklulusan, bukan hanya jumlah mahasiswa yang tidak lulus. Hal ini karena setiap mata kuliah memiliki jumlah peserta yang berbeda. Dengan menggunakan persentase, perbandingan tingkat ketidaklulusan menjadi lebih proporsional.
+   **Pernyataan:** Kaprodi perlu memilih mata kuliah yang mempunyai persentase ketidaklulusan tinggi secara konsisten.
 
-**5. Merumuskan KPI final**
+   Bagian penting dari keputusan tersebut adalah tingkat kegagalan mahasiswa. Informasi yang dibutuhkan bukan hanya jumlah mahasiswa yang gagal, melainkan perbandingannya terhadap seluruh peserta mata kuliah.
 
-- **KPI Name:** Persentase Ketidaklulusan per Mata Kuliah (*Course Failure Rate*).
-- **Definisi:** Persentase mahasiswa yang tidak memenuhi standar kelulusan pada suatu mata kuliah dibandingkan dengan seluruh mahasiswa yang memiliki nilai akhir pada mata kuliah tersebut dalam semester yang sama.
+   **Informasi yang ingin diperoleh:** Persentase mahasiswa yang tidak lulus pada masing-masing mata kuliah dan semester.
 
-**Formula:**
+3. **Mengubah kebutuhan menjadi pertanyaan analitis (AQ01)**
 
-- Numerator: Jumlah mahasiswa unik pada kombinasi NIM, kode mata kuliah, dan semester dengan status tidak lulus.
-- Denominator: Jumlah seluruh mahasiswa unik pada kombinasi NIM, kode mata kuliah, dan semester yang memiliki nilai akhir valid.
-- Aggregation: Jumlah mahasiswa tidak lulus dibagi jumlah seluruh mahasiswa yang memiliki nilai akhir, kemudian dikalikan 100%.
+   **Pernyataan:** Mata kuliah apa yang mempunyai persentase ketidaklulusan paling tinggi pada setiap semester?
 
-\[
-\text{Course Failure Rate} =
-\frac{\text{Jumlah Mahasiswa Tidak Lulus}}
-{\text{Total Mahasiswa dengan Nilai Akhir Valid}}
-\times 100\%
-\]
+   Pertanyaan tersebut menunjukkan komponen analisis yang diperlukan:
+   - Measure: Persentase ketidaklulusan.
+   - Dimension: Mata kuliah dan semester.
+   - Metode analisis: Mengurutkan mata kuliah berdasarkan persentase kegagalan tertinggi.
 
-**Konteks:**
-- Waktu: Tahun akademik dan semester.
-- Mata kuliah: Kode dan nama mata kuliah.
-- Program studi: Program studi mahasiswa.
+4. **Menentukan bentuk metrik yang adil**
 
-**Caveat:**
-- Terdapat 20 nilai angka kosong dan 12 nilai di luar rentang 0–100 sehingga perlu dikeluarkan dari perhitungan sementara sampai divalidasi.
-- Terdapat 20 ketidaksesuaian antara nilai angka dan nilai huruf sehingga aturan penentuan kelulusan perlu dikonfirmasi.
-- Status kelulusan harus mengikuti aturan akademik resmi.
-- Mata kuliah dengan jumlah peserta sedikit perlu diperiksa karena perubahan beberapa mahasiswa dapat menghasilkan persentase yang cukup besar.
-- Duplikasi pada data KRS perlu diperiksa sebelum digunakan sebagai pembanding jumlah peserta.
+   Dalam pengukuran tingkat ketidaklulusan terdapat dua pilihan, yaitu jumlah mahasiswa yang gagal atau persentase mahasiswa yang gagal.
 
-### KPI02 — On-Time Graduation Rate
+   Bentuk yang digunakan adalah **persentase** karena jumlah peserta setiap mata kuliah tidak selalu sama. Sebagai contoh, kegagalan 15 mahasiswa dari 20 peserta menghasilkan persentase 75%, sedangkan kegagalan 20 mahasiswa dari 200 peserta hanya menghasilkan 10%. Dengan demikian, persentase memberikan perbandingan yang lebih proporsional.
 
-**Business Objective (BO03)** = Mengevaluasi pola kelulusan tepat waktu agar universitas dapat menyusun program peningkatan keberhasilan studi.
+5. **Merumuskan KPI Final**
 
-**Decision Requirement (DR03)** = Wakil Rektor Bidang Akademik perlu mengevaluasi program studi dan angkatan berdasarkan persentase kelulusan tepat waktu serta rata-rata masa studi mahasiswa.
+   **KPI Name:**
 
-**Analytical Question (AQ03)** = Bagaimana perbedaan persentase kelulusan tepat waktu dan rata-rata masa studi antarprogram studi?
+   Persentase Ketidaklulusan per Mata Kuliah (Course Failure Rate).
 
-**1. Membedah tujuan bisnis (BO03)**
+   **Definisi:**
 
-Tujuan bisnis ini berfokus pada keberhasilan mahasiswa dalam menyelesaikan pendidikan sesuai dengan waktu yang telah ditentukan. Informasi mengenai ketepatan waktu kelulusan dapat digunakan untuk mengevaluasi keberhasilan proses akademik.
+   Indikator ini menunjukkan besarnya proporsi mahasiswa yang tidak berhasil mencapai standar kelulusan pada suatu mata kuliah dibandingkan dengan jumlah mahasiswa yang mempunyai nilai akhir valid pada mata kuliah tersebut dalam semester yang sama.
 
-**2. Menangkap kebutuhan keputusan (DR03)**
+   **Formula:**
 
-Wakil Rektor Bidang Akademik membutuhkan informasi mengenai persentase kelulusan tepat waktu dan rata-rata masa studi pada setiap program studi. Informasi tersebut digunakan untuk mengetahui kondisi kelulusan dan menentukan program peningkatan keberhasilan studi.
+   - Numerator: Jumlah record nilai pada grain unik mahasiswa–mata kuliah–semester dengan `status_lulus` bernilai `Tidak Lulus`.
+   - Denominator: Jumlah mahasiswa unik pada grain mahasiswa–mata kuliah–semester yang mempunyai `nilai_angka` valid (0–100) dan `status_lulus` terisi.
+   - Aggregation: Menggunakan COUNT pada entitas nilai, kemudian hasil pembagian dikalikan 100%.
 
-**3. Menerjemahkan ke pertanyaan analitis (AQ03)**
+   \[
+   \left(\frac{\text{COUNT(Mahasiswa Tidak Lulus)}}{\text{COUNT(Total Mahasiswa Peserta Mata Kuliah)}}\right)\times100\%
+   \]
 
-- Measure: Jumlah lulusan tepat waktu, total lulusan unik, dan rata-rata masa studi.
-- Dimension: Program studi dan angkatan.
-- Time: Periode atau tahun kelulusan.
-- Cara analisis: Membandingkan persentase kelulusan dan rata-rata masa studi antarprogram studi.
+   **Konteks:**
 
-**4. Memilih bentuk metrik yang adil**
+   - Dimensi waktu: Tahun akademik dan semester Ganjil/Genap.
+   - Dimensi mata kuliah: Kode mata kuliah, nama mata kuliah, dan jenis mata kuliah.
+   - Dimensi program studi dan dosen pengampu untuk membantu evaluasi hasil pembelajaran.
 
-Metrik yang digunakan adalah persentase kelulusan tepat waktu karena jumlah lulusan setiap program studi dapat berbeda. Rata-rata masa studi digunakan sebagai ukuran tambahan agar evaluasi tidak hanya berfokus pada jumlah lulusan.
+   **Caveat:**
 
-**5. Merumuskan KPI final**
+   - Jumlah peserta yang sedikit dapat menyebabkan persentase ketidaklulusan terlihat sangat tinggi meskipun hanya sedikit mahasiswa yang gagal.
+   - Sebanyak 20 nilai kosong dan 12 nilai di luar rentang 0–100 perlu dikeluarkan dari perhitungan.
+   - Terdapat 20 ketidaksesuaian antara nilai angka dan huruf serta 17 ketidaksesuaian antara nilai huruf dan status kelulusan. Oleh karena itu, `status_lulus` digunakan sebagai indikator sementara dan aturan resminya perlu dikonfirmasi.
+   - Perubahan kurikulum maupun standar kelulusan dapat memengaruhi hasil perbandingan antarsemester.
 
-- **KPI Name:** Persentase Kelulusan Tepat Waktu (*On-Time Graduation Rate*).
-- **Definisi:** Persentase mahasiswa yang menyelesaikan studi tepat waktu dibandingkan dengan seluruh mahasiswa unik yang tercatat lulus pada kelompok yang dianalisis.
+### 2. KPI On-Time Graduation Rate
 
-**Formula:**
+**Business Objective (BO03)** = Mengevaluasi pola kelulusan tepat waktu agar universitas dapat menyusun strategi peningkatan keberhasilan penyelesaian studi.
 
-- Numerator: Jumlah mahasiswa unik dengan `status_tepat_waktu = 'Ya'`.
-- Denominator: Jumlah seluruh mahasiswa unik yang tercatat pada tabel kelulusan.
-- Aggregation: Jumlah lulusan tepat waktu dibagi jumlah seluruh lulusan unik, kemudian dikalikan 100%.
+**Decision Requirement (DR02)** = Wakil Rektor Bidang Akademik perlu menentukan program studi dan angkatan yang membutuhkan program peningkatan berdasarkan tingkat kelulusan tepat waktu.
 
-\[
-\text{On-Time Graduation Rate} =
-\frac{\text{Jumlah Lulusan Unik Tepat Waktu}}
-{\text{Jumlah Seluruh Lulusan Unik}}
-\times 100\%
-\]
+**Analytical Question (AQ03)** = Bagaimana perbandingan persentase kelulusan tepat waktu dan rata-rata masa studi pada setiap program studi?
 
-**Konteks:**
-- Program studi.
-- Angkatan mahasiswa.
-- Periode kelulusan.
-- Lama studi dalam bulan.
+Tahapan penyusunan KPI adalah sebagai berikut:
 
-**Caveat:**
-- Terdapat 2 baris berlebih akibat duplikasi pada tabel kelulusan sehingga identitas mahasiswa perlu diperiksa sebelum agregasi.
-- Terdapat 347 record kelulusan dengan 345 mahasiswa unik.
-- Seluruh record yang tersedia berstatus tepat waktu. Setelah duplikasi diperhitungkan, 345 mahasiswa unik tercatat lulus tepat waktu.
-- Data kelulusan yang tersedia belum memiliki kelompok mahasiswa terlambat sebagai pembanding.
-- Seluruh lulusan yang tersedia berasal dari angkatan 2021 dengan masa studi 46–47 bulan. Oleh karena itu, rata-rata masa studi perlu digunakan sebagai ukuran tambahan.
-- Definisi masa studi normal dan aturan penentuan status tepat waktu perlu dikonfirmasi kepada bagian akademik.
+1. **Menganalisis tujuan bisnis (BO03)**
 
-### KPI03 — LMS Engagement per Mata Kuliah
+   Fokus tujuan ini adalah mengetahui keberhasilan mahasiswa dalam menyelesaikan pendidikan sesuai dengan masa studi yang ditentukan. Informasi tersebut diperlukan untuk mengevaluasi pencapaian kelulusan pada tingkat universitas maupun program studi.
 
-**Business Objective (BO04)** = Mengevaluasi hubungan aktivitas LMS dengan performa nilai agar aktivitas LMS dapat dipertimbangkan sebagai indikator pendukung risiko akademik.
+2. **Mengidentifikasi kebutuhan keputusan (DR02)**
 
-**Decision Requirement (DR04)** = Dosen Pengampu dan Kaprodi perlu menentukan apakah aktivitas LMS layak digunakan sebagai indikator pendukung risiko akademik berdasarkan pola hubungan aktivitas LMS dengan nilai mahasiswa.
+   Pimpinan universitas membutuhkan informasi perbandingan kelulusan antarprogram studi dan angkatan untuk menentukan kelompok yang perlu mendapatkan perhatian.
 
-**Analytical Question (AQ04)** = Bagaimana pola hubungan antara jumlah atau durasi aktivitas LMS dengan nilai angka mahasiswa pada setiap mata kuliah?
+3. **Mengubah kebutuhan menjadi pertanyaan analitis (AQ03)**
 
-**1. Membedah tujuan bisnis (BO04)**
+   Komponen analisis yang digunakan:
+   - Measure: Persentase kelulusan tepat waktu dan rata-rata masa studi.
+   - Dimension: Program studi dan angkatan.
+   - Metode analisis: Perbandingan antarprogram studi.
 
-Kata kunci dari tujuan bisnis ini adalah aktivitas LMS dan performa nilai. Aktivitas LMS dapat digunakan untuk melihat keterlibatan mahasiswa dalam proses pembelajaran, sedangkan nilai angka digunakan untuk melihat hasil akademiknya.
+4. **Menentukan bentuk metrik yang adil**
 
-**2. Menangkap kebutuhan keputusan (DR04)**
+   Pengukuran menggunakan persentase karena jumlah lulusan pada setiap program studi berbeda. Selain itu, rata-rata masa studi digunakan sebagai informasi tambahan agar evaluasi tidak hanya berfokus pada jumlah lulusan.
 
-Dosen Pengampu dan Kaprodi membutuhkan informasi mengenai pola aktivitas LMS mahasiswa dan hasil nilai pada mata kuliah yang sama. Informasi tersebut dapat digunakan untuk mengevaluasi apakah aktivitas LMS dapat menjadi indikator pendukung pemantauan akademik.
+5. **Merumuskan KPI Final**
 
-**3. Menerjemahkan ke pertanyaan analitis (AQ04)**
+   **KPI Name:**
 
-- Measure: Jumlah aktivitas LMS, durasi aktivitas, dan nilai angka mahasiswa.
-- Dimension: Mahasiswa, mata kuliah, dan jenis aktivitas LMS.
-- Time: Semester atau periode aktivitas.
-- Cara analisis: Melihat hubungan antara aktivitas LMS dengan hasil nilai pada mata kuliah yang sama.
+   Persentase Kelulusan Tepat Waktu (On-Time Graduation Rate).
 
-**4. Memilih bentuk metrik yang adil**
+   **Definisi:**
 
-Metrik yang digunakan adalah rata-rata aktivitas LMS per mahasiswa pada suatu mata kuliah. Penggunaan rata-rata lebih sesuai daripada jumlah aktivitas keseluruhan karena jumlah mahasiswa yang mengikuti setiap mata kuliah dapat berbeda.
+   Mengukur bagian lulusan yang berhasil menyelesaikan pendidikan sesuai batas waktu yang ditetapkan dibandingkan dengan seluruh mahasiswa yang tercatat lulus pada kelompok yang dianalisis.
 
-**5. Merumuskan KPI final**
+   **Formula:**
 
-- **KPI Name:** Rata-Rata Aktivitas LMS per Mahasiswa per Mata Kuliah (*LMS Engagement*).
-- **Definisi:** Mengukur rata-rata jumlah aktivitas LMS yang dilakukan setiap mahasiswa pada suatu mata kuliah dalam periode tertentu untuk menggambarkan keterlibatan mahasiswa dalam proses pembelajaran.
+   - Numerator: Jumlah mahasiswa unik dengan `status_tepat_waktu` = `Ya`.
+   - Denominator: Jumlah seluruh mahasiswa unik yang tercatat pada tabel kelulusan.
+   - Aggregation: COUNT(DISTINCT nim), kemudian dihitung dalam bentuk persentase.
 
-**Formula:**
+   \[
+   \left(\frac{\text{COUNT(DISTINCT NIM Lulus Tepat Waktu)}}{\text{COUNT(DISTINCT NIM Lulus)}}\right)\times100\%
+   \]
 
-- Numerator: Jumlah event LMS unik berdasarkan `lms_event_id` pada mata kuliah dan semester tertentu.
-- Denominator: Jumlah mahasiswa unik yang terdaftar pada mata kuliah dan semester tersebut berdasarkan KRS yang telah diperiksa duplikasinya.
-- Aggregation: Jumlah event LMS unik dibagi jumlah mahasiswa unik yang terdaftar.
+   **Konteks:**
 
-\[
-\text{LMS Engagement} =
-\frac{\text{Jumlah Event LMS Unik}}
-{\text{Jumlah Mahasiswa Terdaftar}}
-\]
+   - Program studi.
+   - Tahun angkatan.
+   - Periode kelulusan.
+   - Rata-rata masa studi dalam bulan.
 
-**Konteks:**
-- Mata kuliah.
-- Jenis aktivitas LMS (`tipe_event`).
-- Semester.
-- Waktu aktivitas.
-- Nilai angka mahasiswa sebagai pembanding.
+   **Caveat:**
 
-**Caveat:**
-- Terdapat 30 baris duplikat identik pada tabel aktivitas LMS sehingga perlu diperiksa sebelum digunakan dalam perhitungan.
-- Denominator sebaiknya menggunakan mahasiswa yang terdaftar pada KRS, bukan hanya mahasiswa yang memiliki aktivitas LMS.
-- Data KRS juga memiliki 25 baris berlebih akibat duplikasi sehingga perlu diperiksa.
-- `skor_kuis` hanya tersedia pada aktivitas `quiz_attempt`, sehingga perhitungan skor kuis harus dibatasi pada jenis aktivitas tersebut.
-- Aktivitas yang tinggi tidak selalu menunjukkan nilai akademik yang tinggi.
-- Hubungan statistik antara aktivitas LMS dan nilai tidak dapat langsung dianggap sebagai hubungan sebab-akibat.
+   - Data kelulusan hanya tersedia untuk periode Juni 2025 sehingga belum mewakili seluruh angkatan.
+   - Terdapat dua baris kelulusan duplikat dari 347 record dan 345 NIM unik sehingga harus dilakukan deduplikasi.
+   - Seluruh 347 record berstatus `Ya`, sehingga KPI menghasilkan 100% dan belum dapat membedakan performa antarprogram studi.
+   - Seluruh lulusan berasal dari angkatan 2021 dengan masa studi 46–47 bulan.
+   - Definisi resmi masa studi normal dan kesesuaian `status_tepat_waktu` dengan `masa_studi_bulan` masih perlu diperiksa.
+   - Rata-rata masa studi perlu digunakan sebagai ukuran tambahan sampai data mahasiswa terlambat lulus tersedia.
+
+### 3. KPI LMS Engagement per Mata Kuliah
+
+**Business Objective (BO04)** = Mengkaji hubungan aktivitas pembelajaran LMS dengan hasil nilai agar keterlibatan mahasiswa dapat digunakan sebagai informasi pendukung dalam mendeteksi risiko akademik.
+
+**Decision Requirement (DR04)** = Dosen Pengampu dan Kaprodi perlu memutuskan apakah aktivitas LMS dapat dijadikan indikator tambahan risiko akademik berdasarkan pola hubungannya dengan nilai mahasiswa.
+
+**Analytical Question (AQ04)** = Bagaimana pola hubungan antara jumlah atau total durasi aktivitas LMS dengan nilai angka mahasiswa pada masing-masing mata kuliah?
+
+Tahapan penyusunan KPI adalah sebagai berikut:
+
+1. **Menganalisis tujuan bisnis (BO04)**
+
+   Tujuan ini berfokus pada keterlibatan mahasiswa dalam pembelajaran digital dan kaitannya dengan hasil akademik. Aktivitas LMS dapat memberikan gambaran mengenai seberapa aktif mahasiswa mengikuti kegiatan pembelajaran.
+
+2. **Mengidentifikasi kebutuhan keputusan (DR04)**
+
+   Dosen dan Kaprodi membutuhkan bukti mengenai pola aktivitas LMS dan hasil nilai sebelum menjadikan aktivitas tersebut sebagai salah satu indikator risiko akademik.
+
+3. **Mengubah kebutuhan menjadi pertanyaan analitis (AQ04)**
+
+   Komponen yang digunakan:
+   - Measure: Jumlah aktivitas LMS, durasi aktivitas, dan nilai angka.
+   - Dimension: Mata kuliah dan tipe aktivitas.
+   - Metode analisis: Mengamati hubungan antara aktivitas LMS dan nilai.
+
+4. **Menentukan bentuk metrik yang adil**
+
+   Pengukuran menggunakan rata-rata jumlah aktivitas per mahasiswa, bukan total aktivitas keseluruhan. Hal ini dilakukan karena jumlah mahasiswa yang mengikuti setiap mata kuliah berbeda. Mahasiswa yang tidak memiliki aktivitas LMS tetap dimasukkan ke dalam denominator selama terdaftar pada KRS.
+
+5. **Merumuskan KPI Final**
+
+   **KPI Name:**
+
+   Rata-rata Aktivitas LMS per Mahasiswa per Mata Kuliah (LMS Engagement).
+
+   **Definisi:**
+
+   Menggambarkan rata-rata jumlah aktivitas pembelajaran yang dilakukan setiap mahasiswa pada suatu mata kuliah melalui LMS. Informasi ini digunakan untuk melihat tingkat keterlibatan mahasiswa dalam kegiatan pembelajaran digital.
+
+   **Formula:**
+
+   - Numerator: `COUNT(DISTINCT lms_event_id)` pada mata kuliah tertentu.
+   - Denominator: Jumlah mahasiswa unik yang terdaftar pada mata kuliah dan semester berdasarkan KRS yang telah dibersihkan.
+   - Aggregation: Jumlah event dibagi jumlah mahasiswa terdaftar. Perhitungan dapat dilengkapi dengan rata-rata `durasi_menit`.
+
+   \[
+   \frac{\text{COUNT(DISTINCT lms\_event\_id)}}{\text{COUNT(DISTINCT NIM pada KRS)}}
+   \]
+
+   **Konteks:**
+
+   - Mata kuliah.
+   - Jenis aktivitas (`tipe_event`).
+   - Periode semester atau waktu aktivitas.
+   - Nilai angka mahasiswa pada mata kuliah yang sama.
+
+   **Caveat:**
+
+   - Sebanyak 30 event LMS yang terduplikasi harus ditangani sebelum perhitungan.
+   - Mahasiswa yang tidak melakukan aktivitas LMS tetap perlu masuk denominator selama terdaftar dalam KRS.
+   - `skor_kuis` hanya tersedia pada aktivitas `quiz_attempt`, sehingga perhitungannya harus dibatasi pada tipe tersebut.
+   - Hubungan aktivitas LMS dengan nilai tidak otomatis menunjukkan bahwa aktivitas tersebut menjadi penyebab tinggi atau rendahnya hasil akademik.
 
 ## 8. Data Requirement
 
-Data Requirement diturunkan dari kebutuhan measure, context, time, dan filter/comparison pada setiap Analytical Question dan KPI.
+Data Requirement digunakan untuk menentukan informasi apa saja yang harus tersedia agar setiap KPI dan Analytical Question dapat dihitung. Identifikasi dilakukan dengan memperhatikan ukuran yang digunakan, konteks analisis, waktu, serta kriteria perbandingan.
 
-**1. AQ01 dan KPI01**
+### 1. AQ01 dan KPI01
 
-Analytical Question (AQ01): Mata kuliah apa yang memiliki persentase ketidaklulusan tertinggi pada setiap semester?
+**Analytical Question (AQ01)** = Mata kuliah apa yang mempunyai persentase ketidaklulusan paling tinggi pada setiap semester?
 
-KPI: Course Failure Rate.
+**KPI:** Persentase Ketidaklulusan per Mata Kuliah (Course Failure Rate).
 
 Komponen yang dibutuhkan:
-- Jumlah mahasiswa tidak lulus.
-- Jumlah seluruh mahasiswa yang memiliki nilai akhir valid.
-- Persentase ketidaklulusan.
+1. Jumlah mahasiswa yang tidak lulus.
+2. Jumlah seluruh mahasiswa yang memiliki nilai akhir valid pada mata kuliah tersebut.
 
-Kebutuhan data:
-- Measure: Jumlah mahasiswa, jumlah mahasiswa tidak lulus, nilai angka, dan persentase ketidaklulusan.
+Berdasarkan kebutuhan tersebut, diperoleh:
+
+- Measure: Jumlah mahasiswa, nilai angka, jumlah mahasiswa tidak lulus, dan failure rate.
 - Context: Mata kuliah dan program studi.
-- Time: Semester dan tahun akademik.
-- Filter/Comparison: Nilai valid 0–100 dan status kelulusan yang telah divalidasi.
+- Time: Semester.
+- Comparison/filter: Nilai angka valid 0–100 dan status kelulusan yang terisi. `status_lulus` digunakan sebagai indikator sementara.
 
 Data yang diperlukan:
-- `nim` dari tabel `nilai` untuk mengidentifikasi mahasiswa.
-- `kode_mk` dari tabel `nilai` untuk menentukan mata kuliah.
-- `semester_id` dari tabel `nilai` untuk menentukan periode penilaian.
-- `nilai_angka` dari tabel `nilai` untuk mengetahui hasil penilaian.
-- `status_lulus` dari tabel `nilai` untuk menentukan status kelulusan sementara.
-- `kode_mk` dan `nama_mk` dari tabel `mata_kuliah` untuk memberikan informasi mata kuliah.
+- `nim` dari tabel `nilai`, sebagai identitas mahasiswa yang dihitung.
+- `kode_mk` dari tabel `nilai`, sebagai identitas mata kuliah.
+- `semester_id` dari tabel `nilai`, untuk menentukan periode penilaian.
+- `nilai_angka` dan `status_lulus` dari tabel `nilai`, untuk menghitung jumlah mahasiswa tidak lulus dan total peserta yang memenuhi kriteria.
+- `nilai_huruf` digunakan untuk pemeriksaan kesesuaian hasil penilaian.
 
-**2. AQ02 dan KPI01 (Tren Ketidaklulusan per Program Studi)**
+### 2. AQ02 dan KPI01 (Tren Ketidaklulusan per Program Studi)
 
-Analytical Question (AQ02): Bagaimana perubahan persentase ketidaklulusan setiap program studi dari semester 2021G sampai 2024E?
+**Analytical Question (AQ02)** = Bagaimana perkembangan persentase ketidaklulusan pada setiap program studi dari semester 2021G sampai 2024E?
 
-Kebutuhan data:
-- Measure: Jumlah mahasiswa tidak lulus, jumlah seluruh mahasiswa dengan nilai valid, dan persentase ketidaklulusan.
-- Context: Program studi dan angkatan.
-- Time: Tahun akademik dan semester.
-- Filter/Comparison: Periode semester dan nilai yang valid.
+Kebutuhan data yang digunakan:
 
-Data yang diperlukan:
-- `nim`, `kode_mk`, `semester_id`, `nilai_angka`, dan `status_lulus` dari tabel `nilai`.
-- `kode_prodi_raw` dan `angkatan` dari tabel `mahasiswa`.
-- `kode_prodi` dan `nama_prodi` dari tabel `program_studi`.
-- `tahun_akademik`, `term`, dan `urutan_tahun` dari tabel `semester`.
+- Measure: Jumlah mahasiswa tidak lulus, jumlah peserta, dan persentase ketidaklulusan.
+- Context: Program studi.
+- Time: Semester 2021G sampai 2024E.
+- Comparison/filter: Nilai valid dan urutan semester yang benar.
 
-**3. AQ03 dan KPI02 (Kelulusan Tepat Waktu)**
+Data yang dibutuhkan:
+- `nim`, `kode_mk`, `semester_id`, dan `status_lulus` dari tabel `nilai`.
+- `kode_prodi_raw` dari tabel `mahasiswa` untuk mengetahui program studi mahasiswa.
+- `kode_prodi` dan `nama_prodi` dari tabel `program_studi` sebagai referensi program studi.
 
-Analytical Question (AQ03): Bagaimana perbedaan persentase kelulusan tepat waktu dan rata-rata masa studi antarprogram studi?
+### 3. AQ03 dan KPI02 (Kelulusan Tepat Waktu)
 
-Kebutuhan data:
-- Measure: Jumlah lulusan unik, jumlah lulusan tepat waktu, persentase kelulusan tepat waktu, dan rata-rata masa studi.
+**Analytical Question (AQ03)** = Bagaimana perbandingan persentase kelulusan tepat waktu dan rata-rata masa studi pada setiap program studi?
+
+Kebutuhan data yang digunakan:
+
+- Measure: Jumlah lulusan unik, jumlah lulusan tepat waktu, dan rata-rata masa studi.
 - Context: Program studi dan angkatan.
 - Time: Periode kelulusan.
-- Filter/Comparison: Satu record kelulusan per NIM setelah pemeriksaan duplikasi.
+- Comparison/filter: Satu record kelulusan untuk setiap NIM setelah deduplikasi.
 
 Data yang diperlukan:
-- `nim` dari tabel `kelulusan` untuk identitas lulusan.
-- `status_tepat_waktu` untuk mengetahui ketepatan waktu kelulusan.
-- `masa_studi_bulan` untuk menghitung durasi studi.
-- `ipk_final` dan `predikat` untuk informasi hasil akhir studi.
-- `tanggal_lulus_raw` untuk periode kelulusan.
+- `nim`, `status_tepat_waktu`, `masa_studi_bulan`, `ipk_final`, `predikat`, dan `tanggal_lulus_raw` dari tabel `kelulusan`.
 - `angkatan` dan `kode_prodi_raw` dari tabel `mahasiswa`.
-- Referensi `kode_prodi` dan `nama_prodi` dari tabel `program_studi`.
+- `kode_prodi` dan `nama_prodi` dari tabel `program_studi`.
 
-**4. AQ04 dan KPI03 (Aktivitas LMS dan Nilai)**
+### 4. AQ04 dan KPI03 (Aktivitas LMS dengan Nilai)
 
-Analytical Question (AQ04): Bagaimana pola hubungan antara jumlah atau durasi aktivitas LMS dengan nilai angka mahasiswa pada setiap mata kuliah?
+**Analytical Question (AQ04)** = Bagaimana pola hubungan antara jumlah atau total durasi aktivitas LMS dengan nilai angka mahasiswa pada setiap mata kuliah?
 
-Kebutuhan data:
+Kebutuhan data yang digunakan:
+
 - Measure: Jumlah event, durasi aktivitas, skor kuis, nilai angka, dan jumlah mahasiswa terdaftar.
-- Context: Mahasiswa, mata kuliah, dan jenis aktivitas.
-- Time: Semester dan waktu aktivitas.
-- Filter/Comparison: `lms_event_id` unik dan skor kuis hanya dihitung pada aktivitas `quiz_attempt`.
+- Context: Mata kuliah dan tipe aktivitas.
+- Time: Semester.
+- Comparison/filter: Event unik berdasarkan `lms_event_id`; skor kuis hanya untuk `quiz_attempt`.
 
 Data yang diperlukan:
 - `lms_event_id`, `nim`, `kode_mk`, `semester_id`, `waktu_event`, `tipe_event`, `durasi_menit`, dan `skor_kuis` dari tabel `aktivitas_lms`.
 - `nim`, `kode_mk`, `semester_id`, dan `nilai_angka` dari tabel `nilai`.
-- `nim`, `kode_mk`, dan `semester_id` dari tabel `krs` untuk menentukan mahasiswa yang terdaftar pada mata kuliah.
-- Data mahasiswa untuk informasi program studi dan angkatan.
+- `nim`, `kode_mk`, dan `semester_id` dari tabel `krs` untuk menentukan jumlah mahasiswa yang terdaftar.
 
-**5. AQ05 (Nilai Semester Awal dan Predikat Kelulusan)**
+Penggabungan data dilakukan berdasarkan `nim`, `kode_mk`, dan `semester_id`.
 
-Analytical Question (AQ05): Bagaimana perbedaan rata-rata nilai angka pada semester awal antara mahasiswa dengan kelompok predikat kelulusan yang berbeda?
+### 5. AQ05 (Nilai Semester Awal Berdasarkan Predikat Kelulusan)
 
-Kebutuhan data:
-- Measure: Rata-rata nilai angka mahasiswa pada semester awal.
-- Context: Predikat kelulusan.
-- Time: Semester awal, misalnya dua semester pertama setiap mahasiswa.
-- Filter/Comparison: Nilai valid dan data kelulusan unik.
+**Analytical Question (AQ05)** = Bagaimana perbedaan rata-rata nilai angka pada semester awal berdasarkan kelompok predikat kelulusan?
+
+Kebutuhan data yang digunakan:
+
+- Measure: Rata-rata nilai angka.
+- Context: Predikat kelulusan (Cukup, Memuaskan, dan Sangat Memuaskan).
+- Time: Dua semester pertama setiap mahasiswa.
+- Comparison/filter: Nilai angka valid 0–100 dan lulusan unik.
 
 Data yang diperlukan:
 - `nim`, `semester_id`, dan `nilai_angka` dari tabel `nilai`.
 - `nim`, `predikat`, dan `ipk_final` dari tabel `kelulusan`.
 - `semester_id` dan `urutan_tahun` dari tabel `semester`.
 
-Catatan: Analisis predikat kelulusan dapat dilakukan dengan data yang tersedia setelah pemeriksaan duplikasi dan validitas nilai. Namun, perbandingan mahasiswa tepat waktu dengan mahasiswa terlambat belum dapat dilakukan karena seluruh lulusan yang tercatat berstatus tepat waktu.
+Catatan: Perbandingan antara mahasiswa yang lulus tepat waktu dan terlambat belum dapat dilakukan karena seluruh data kelulusan yang tersedia berstatus tepat waktu.
 
-**Tabel Ringkasan Data Requirement**
+Seluruh kebutuhan data dirangkum dalam tabel berikut:
 
 | AQ | Measure | Context | Time | Filter/Comparison | Required Data |
 |---|---|---|---|---|---|
-| AQ01 | Jumlah mahasiswa, jumlah tidak lulus, failure rate | Mata kuliah, program studi | Semester | Nilai valid dan status lulus | `nim`, `kode_mk`, `semester_id`, `nilai_angka`, `status_lulus` |
-| AQ02 | Jumlah tidak lulus dan failure rate | Program studi, angkatan | Semester | Periode 2021G–2024E | Data nilai, mahasiswa, program studi, semester |
-| AQ03 | Jumlah lulusan, lulusan tepat waktu, rata-rata masa studi | Program studi, angkatan | Periode kelulusan | NIM unik | `nim`, `status_tepat_waktu`, `masa_studi_bulan`, `tanggal_lulus_raw`, angkatan, prodi |
-| AQ04 | Jumlah event, durasi, skor kuis, nilai angka, jumlah peserta | Mahasiswa, mata kuliah, tipe aktivitas | Semester dan waktu aktivitas | Event unik, skor khusus kuis, KRS unik | Data `aktivitas_lms`, `nilai`, dan `krs` |
-| AQ05 | Rata-rata nilai angka | Predikat kelulusan | Semester awal | Nilai valid dan lulusan unik | `nim`, `semester_id`, `nilai_angka`, `predikat`, `ipk_final` |
+| AQ01 | Jumlah mahasiswa, jumlah tidak lulus, failure rate | Mata kuliah, prodi | Semester | Nilai valid 0–100; `status_lulus` sebagai indikator sementara | `nim`, `kode_mk`, `semester_id`, `nilai_angka`, `status_lulus` |
+| AQ02 | Failure rate per prodi | Program studi | Semester 2021G–2024E | Nilai valid dan urutan semester | `nim`, `kode_mk`, `semester_id`, `status_lulus`, `kode_prodi_raw`, `kode_prodi`, `nama_prodi` |
+| AQ03 | Jumlah lulusan, lulusan tepat waktu, rata-rata masa studi | Program studi, angkatan | Periode kelulusan | Satu record per NIM | `nim`, `status_tepat_waktu`, `masa_studi_bulan`, `tanggal_lulus_raw`, `angkatan`, `kode_prodi_raw` |
+| AQ04 | Jumlah event, durasi, skor kuis, nilai angka, jumlah mahasiswa terdaftar | Mata kuliah, tipe event | Semester | `lms_event_id` unik; skor hanya untuk `quiz_attempt`; denominator dari KRS unik | `lms_event_id`, `nim`, `kode_mk`, `semester_id`, `tipe_event`, `durasi_menit`, `skor_kuis`, `nilai_angka`, data KRS |
+| AQ05 | Rata-rata nilai angka | Predikat kelulusan | Dua semester awal | Nilai valid dan lulusan unik | `nim`, `semester_id`, `nilai_angka`, `predikat` |
 
 ## 9. Source Mapping
 
-Source Mapping digunakan untuk menghubungkan kebutuhan data dengan tabel sumber, kolom yang diperlukan, dan fungsi masing-masing kolom.
+Source Mapping dilakukan untuk memastikan setiap kebutuhan data memiliki sumber yang jelas. Pemetaan ini menghubungkan informasi yang diperlukan dengan tabel dan kolom yang tersedia pada dataset UADW v1.0.
+
+Pendekatan yang digunakan adalah:
+
+**Data yang dibutuhkan → Tabel/file sumber → Kolom → Fungsi data.**
+
+Hasil pemetaan sumber data adalah sebagai berikut:
 
 | Data Requirement | Source | Column | Role |
 |---|---|---|---|
-| Identitas mahasiswa | `mahasiswa`, `nilai` | `nim` | Integration key |
-| Identitas mata kuliah | `nilai`, `mata_kuliah` | `kode_mk` | Course identifier |
+| Identitas mahasiswa | `nilai`; `mahasiswa` | `nim` | Integration key |
+| Identitas mata kuliah | `nilai`; `mata_kuliah` | `kode_mk` | Course identifier |
 | Nama mata kuliah | `mata_kuliah` | `nama_mk` | Analytical context |
-| Semester | `nilai`, `krs`, `semester` | `semester_id` | Time key |
-| Tahun akademik | `semester` | `tahun_akademik`, `term` | Time context |
-| Nilai angka | `nilai` | `nilai_angka` | Measure |
-| Nilai huruf | `nilai` | `nilai_huruf` | Validation |
-| Status lulus | `nilai` | `status_lulus` | KPI component |
-| Program studi | `mahasiswa`, `program_studi` | `kode_prodi_raw`, `kode_prodi`, `nama_prodi` | Analytical context |
-| Angkatan | `mahasiswa` | `angkatan` | Analytical context |
-| Status tepat waktu | `kelulusan` | `status_tepat_waktu` | KPI component |
-| Predikat kelulusan | `kelulusan` | `predikat` | Analytical context |
-| IPK akhir | `kelulusan` | `ipk_final` | Measure |
-| Masa studi | `kelulusan` | `masa_studi_bulan` | Measure |
-| Tanggal kelulusan | `kelulusan` | `tanggal_lulus_raw` | Time context |
-| Aktivitas LMS | `aktivitas_lms` | `lms_event_id` | Event identifier |
-| Jenis aktivitas LMS | `aktivitas_lms` | `tipe_event` | Analytical context |
-| Waktu aktivitas LMS | `aktivitas_lms` | `waktu_event` | Time key |
-| Durasi aktivitas | `aktivitas_lms` | `durasi_menit` | Measure |
-| Skor kuis | `aktivitas_lms` | `skor_kuis` | Measure |
+| Informasi semester | `nilai`; `semester` | `semester_id` | Time key |
+| Hasil penilaian | `nilai` | `nilai_angka` | Measure |
+| Status kelulusan mata kuliah | `nilai` | `status_lulus`, `nilai_huruf` | KPI component |
+| Program studi mahasiswa | `mahasiswa`; `program_studi` | `kode_prodi_raw`, `kode_prodi`, `nama_prodi` | Analytical context |
+| Angkatan mahasiswa | `mahasiswa` | `angkatan` | Analytical context |
+| Status kelulusan tepat waktu | `kelulusan` | `status_tepat_waktu` | KPI component |
+| Predikat dan IPK akhir | `kelulusan` | `predikat`, `ipk_final` | Analytical context / Measure |
+| Lama masa studi | `kelulusan` | `masa_studi_bulan` | Measure |
+| Identitas aktivitas LMS | `aktivitas_lms` | `lms_event_id` | Measure (jumlah event) |
 | Peserta mata kuliah | `krs` | `nim`, `kode_mk`, `semester_id` | Denominator KPI LMS |
+| Lama aktivitas LMS | `aktivitas_lms` | `durasi_menit` | Measure |
+| Semester aktivitas LMS | `aktivitas_lms` | `semester_id` | Time key |
+| Kategori aktivitas | `aktivitas_lms` | `tipe_event` | Analytical context |
 
 ## 10. Data Fitness
 
-Data Fitness digunakan untuk menilai kesiapan setiap sumber data berdasarkan hasil Data Profiling dan Data Quality Assessment pada Unit 1.2.
+Data Fitness dilakukan untuk menilai apakah sumber data yang akan digunakan telah mempunyai kualitas dan kelengkapan yang memadai. Penilaian ini mengacu pada hasil Data Profiling yang telah dilakukan pada Modul 1 Unit 1.2.
+
+Hasil pemeriksaan kesiapan data adalah sebagai berikut:
 
 | Source | Evidence Unit 1.2 | Fitness | Required Action |
 |---|---|---|---|
-| `mahasiswa` | 15 kelompok NIM duplikat, 30 kota asal kosong, 30 label prodi untuk 6 program studi resmi, 6 label jenis kelamin, serta variasi format tanggal | Conditional Ready | Memeriksa duplikasi NIM, menyiapkan mapping program studi dan jenis kelamin, serta memvalidasi format tanggal |
-| `program_studi` | Memiliki 6 data referensi program studi resmi | Ready | Digunakan sebagai acuan nama dan kode program studi |
-| `mata_kuliah` | Memiliki 208 record dan digunakan sebagai referensi mata kuliah; kualitas atribut perlu dipastikan sesuai kebutuhan analisis | Conditional Ready | Memeriksa keunikan kode mata kuliah dan kesesuaian referensi |
-| `semester` | Memiliki 8 record referensi semester dan digunakan untuk mengelompokkan periode akademik | Ready | Digunakan sebagai acuan dimensi waktu akademik |
-| `krs` | Terdapat 25 baris berlebih akibat duplikasi kombinasi data dan tidak ditemukan orphan pada relasi yang diuji | Conditional Ready | Memeriksa duplikasi sebelum menghitung jumlah mahasiswa peserta mata kuliah |
-| `nilai` | Terdapat 20 nilai kosong, 12 nilai di luar rentang 0–100, dan 20 ketidaksesuaian nilai angka dengan huruf | Conditional Ready | Memvalidasi nilai dan menentukan aturan resmi penentuan status kelulusan |
-| `aktivitas_lms` | Terdapat 30 baris duplikat identik; seluruh skor kuis pada aktivitas kuis tersedia dan aktivitas non-kuis tidak memiliki skor | Conditional Ready | Memeriksa duplikasi event serta membedakan aktivitas kuis dan non-kuis |
-| `kelulusan – On-Time Profile` | Terdapat 347 record dengan 345 mahasiswa unik; seluruh record memiliki status tepat waktu | Conditional Ready | Memeriksa duplikasi dan memastikan ketepatan status kelulusan |
-| `kelulusan – On-Time vs Late` | Seluruh record berstatus tepat waktu dan belum terdapat data lulusan terlambat | Not Ready | Membutuhkan data lulusan terlambat atau data tambahan dari periode berikutnya |
+| mahasiswa | Ditemukan 15 NIM duplikat persis (1.965 record dibandingkan 1.950 NIM unik); terdapat 30 variasi label untuk 6 program studi; 208 `kode_prodi_raw` bermasalah karena spasi atau huruf kecil; 30 kota asal kosong dan 3 format tanggal berbeda | Conditional Ready | Melakukan deduplikasi berdasarkan `nim`, menyeragamkan kode prodi menggunakan TRIM dan UPPER, serta memperbaiki format tanggal |
+| program_studi | Terdapat 6 record dengan kode dan nama program studi yang unik serta tidak ditemukan masalah berarti | Ready | Digunakan sebagai referensi utama program studi |
+| mata_kuliah | `kode_mk` bersifat unik, tidak ditemukan orphan dari KRS, nilai, maupun LMS; 63 nama mata kuliah berulang antarprodi karena digunakan pada program studi berbeda | Ready | Menggunakan `kode_mk` sebagai identitas utama mata kuliah |
+| semester | Terdapat 8 record semester dari 2021G sampai 2024E dengan kondisi bersih dan tidak ditemukan orphan dari KRS maupun nilai | Ready | Digunakan sebagai referensi dimensi waktu |
+| krs | Ditemukan 25 record duplikat persis dari 57.025 record menjadi 57.000 record unik; tidak terdapat orphan dan ditemukan 3 format tanggal | Conditional Ready | Menghapus duplikasi sebelum menghitung peserta mata kuliah dan menyeragamkan tanggal |
+| nilai | Memiliki key unik sebanyak 57.000 record; terdapat 20 nilai kosong, 12 nilai di luar rentang 0–100, 20 ketidaksesuaian angka-huruf, dan 17 ketidaksesuaian huruf-status | Conditional Ready | Mengeluarkan nilai kosong dan tidak valid dari KPI serta memastikan aturan resmi penentuan kelulusan |
+| aktivitas_lms | Ditemukan 30 event duplikat persis; skor kuis hanya terisi pada `quiz_attempt`; durasi dan skor berada dalam rentang yang sesuai serta tidak ditemukan orphan | Conditional Ready | Menghilangkan event duplikat berdasarkan `lms_event_id` sebelum proses perhitungan |
+| kelulusan – profile on-time | Terdapat 347 record tetapi hanya 345 NIM unik; ditemukan 2 duplikasi persis, 1 format tanggal bermasalah, seluruh status bernilai `Ya`, dan masa studi berkisar 46–47 bulan | Conditional Ready | Melakukan deduplikasi berdasarkan NIM dan memeriksa konsistensi data masa studi serta IPK |
+| kelulusan – on-time vs late | Seluruh 347 record memiliki status tepat waktu `Ya`; belum terdapat kelompok mahasiswa yang terlambat lulus dan data hanya mencakup angkatan 2021 pada Juni 2025 | Not Ready | Mengonfirmasi kepada bagian akademik apakah data mahasiswa terlambat belum tersedia atau belum tercatat |
 
-**Keterangan Fitness:**
+Keterangan:
 
-- **Ready:** Data sudah dapat digunakan untuk kebutuhan analisis yang ditentukan.
-- **Conditional Ready:** Data dapat digunakan setelah pemeriksaan atau penanganan masalah kualitas tertentu.
-- **Not Ready:** Data belum dapat digunakan untuk analisis yang dimaksud karena informasi pembanding belum tersedia.
+- **Ready**: Data dapat digunakan tanpa perbaikan besar.
+- **Conditional Ready**: Data dapat digunakan setelah dilakukan pembersihan atau pemeriksaan tertentu.
+- **Not Ready**: Data belum dapat digunakan untuk kebutuhan analisis yang ditentukan karena informasi penting belum tersedia.
 
-Berdasarkan hasil profiling, sebagian besar sumber memiliki status Conditional Ready karena masih membutuhkan pemeriksaan kualitas. Sementara itu, analisis perbandingan lulusan tepat waktu dan terlambat berstatus Not Ready karena seluruh record kelulusan yang tersedia memiliki status tepat waktu.
+Berdasarkan hasil tersebut, sebagian besar data dapat dimanfaatkan setelah melalui proses pembersihan. Satu kebutuhan yang belum dapat dipenuhi adalah perbandingan kelulusan tepat waktu dengan kelulusan terlambat karena dataset belum memiliki kategori mahasiswa terlambat lulus.
 
 ## 11. Candidate Model
 
-Candidate Model dibuat untuk menentukan gambaran awal model analitik berdasarkan rumus:
+Candidate Model disusun untuk menentukan gambaran awal model data yang berpotensi digunakan dalam analisis. Pada tahap ini belum dilakukan pembangunan Star Schema secara final. Fokusnya adalah menentukan business event, grain, fact, dimension, dan measure berdasarkan Analytical Question.
+
+Penyusunan menggunakan alur:
 
 **Analytical Question → Business Event → Grain → Dimension → Fact → Measure.**
 
-Pada tahap ini belum dibuat Star Schema final. Model hanya berupa kandidat yang dapat digunakan sebagai dasar perancangan data warehouse berikutnya.
+### AQ01
 
-### AQ01 — Course Failure Rate
+**Analytical Question:**
 
-**Analytical Question:** Mata kuliah apa yang memiliki persentase ketidaklulusan tertinggi pada setiap semester?
+> Mata kuliah apa yang memiliki failure rate tertinggi pada setiap semester?
 
-**Business Event:** Mahasiswa memperoleh nilai akhir pada suatu mata kuliah.
+**Business Event:**
 
-**Candidate Grain:** Satu baris data mewakili nilai akhir satu mahasiswa untuk satu mata kuliah pada satu semester.
+> Mahasiswa memperoleh hasil penilaian akhir pada mata kuliah.
 
-**Candidate Fact:** Fact_Penilaian atau Fact_Nilai_Mahasiswa.
+**Candidate Grain:**
+
+> Satu record menggambarkan nilai akhir seorang mahasiswa pada satu mata kuliah dalam satu semester.
+
+**Candidate Fact:**
+
+> Fact_Penilaian atau Fact_Nilai_Mahasiswa.
 
 **Candidate Dimensions:**
+
 - Dim_Mahasiswa
 - Dim_Mata_Kuliah
 - Dim_Semester
 - Dim_Program_Studi
 
 **Candidate Measures:**
+
 - `nilai_angka`
-- `status_lulus`
-- Jumlah peserta
-- Jumlah mahasiswa tidak lulus
-- Course Failure Rate
+- `is_lulus`
+- Record count
 
-### AQ02 — Tren Ketidaklulusan per Program Studi
+### AQ02
 
-**Analytical Question:** Bagaimana perubahan persentase ketidaklulusan setiap program studi dari semester 2021G sampai 2024E?
+**Analytical Question:**
 
-**Business Event:** Mahasiswa memperoleh nilai akhir pada mata kuliah di setiap semester.
+> Bagaimana perkembangan persentase ketidaklulusan pada setiap program studi dari semester 2021G sampai 2024E?
 
-**Candidate Grain:** Satu nilai akhir mahasiswa untuk satu mata kuliah pada satu semester, sama dengan AQ01.
+**Business Event:**
 
-**Candidate Fact:** Fact_Penilaian.
+> Mahasiswa mendapatkan nilai akhir pada mata kuliah yang diambil selama semester berlangsung.
+
+**Candidate Grain:**
+
+> Satu record menunjukkan hasil penilaian seorang mahasiswa untuk satu mata kuliah pada satu semester, sama dengan grain AQ01.
+
+**Candidate Fact:**
+
+> Fact_Penilaian.
 
 **Candidate Dimensions:**
+
 - Dim_Mahasiswa
 - Dim_Program_Studi
 - Dim_Semester
-- Dim_Mata_Kuliah
 
 **Candidate Measures:**
-- Jumlah mahasiswa peserta
-- Jumlah mahasiswa tidak lulus
-- Nilai rata-rata
-- Course Failure Rate
 
-**Catatan:** Hasil analisis dapat dikelompokkan berdasarkan program studi dan semester untuk melihat perubahan performa akademik dari waktu ke waktu.
+- `is_tidak_lulus`
+- Jumlah peserta
+- Failure rate
 
-### AQ03 — On-Time Graduation
+### AQ03
 
-**Analytical Question:** Bagaimana perbedaan persentase kelulusan tepat waktu dan rata-rata masa studi antarprogram studi?
+**Analytical Question:**
 
-**Business Event:** Mahasiswa dinyatakan lulus oleh universitas.
+> Bagaimana perbandingan persentase kelulusan tepat waktu dan rata-rata masa studi pada setiap program studi?
 
-**Candidate Grain:** Satu record kelulusan untuk satu mahasiswa.
+**Business Event:**
 
-**Candidate Fact:** Fact_Kelulusan.
+> Mahasiswa menyelesaikan seluruh persyaratan akademik dan dinyatakan lulus oleh bagian akademik.
+
+**Candidate Grain:**
+
+> Satu record mewakili satu peristiwa kelulusan untuk satu mahasiswa.
+
+**Candidate Fact:**
+
+> Fact_Kelulusan.
 
 **Candidate Dimensions:**
+
 - Dim_Mahasiswa
 - Dim_Program_Studi
 - Dim_Angkatan
 - Dim_Tanggal_Lulus
 
 **Candidate Measures:**
-- `status_tepat_waktu`
+
+- `is_tepat_waktu`
 - `masa_studi_bulan`
 - `ipk_final`
-- Jumlah lulusan unik
-- On-Time Graduation Rate
+- Jumlah lulusan
 
-**Catatan:** Seluruh data kelulusan yang tersedia berstatus tepat waktu. Oleh karena itu, rata-rata masa studi dapat digunakan sebagai ukuran tambahan untuk memberikan gambaran durasi penyelesaian studi.
+Catatan: Seluruh lulusan dalam dataset saat ini berstatus tepat waktu. Oleh karena itu, masa studi menjadi ukuran tambahan yang lebih informatif untuk membandingkan kelompok lulusan.
 
-### AQ04 — LMS Engagement dan Nilai
+### AQ04
 
-**Analytical Question:** Bagaimana pola hubungan antara jumlah atau durasi aktivitas LMS dengan nilai angka mahasiswa pada setiap mata kuliah?
+**Analytical Question:**
 
-**Business Event:** Mahasiswa melakukan aktivitas pembelajaran melalui LMS.
+> Bagaimana pola hubungan antara jumlah atau durasi aktivitas LMS dengan nilai angka mahasiswa pada setiap mata kuliah?
 
-**Candidate Grain:** Satu record mewakili satu event aktivitas LMS berdasarkan satu `lms_event_id`.
+**Business Event:**
 
-**Candidate Fact:** Fact_Aktivitas_LMS.
+> Mahasiswa melaksanakan aktivitas pembelajaran melalui sistem LMS.
 
-**Candidate Dimensions:**
-- Dim_Mahasiswa
-- Dim_Mata_Kuliah
-- Dim_Jenis_Aktivitas
-- Dim_Waktu
-- Dim_Semester
+**Candidate Grain:**
 
-**Candidate Measures:**
-- `durasi_menit`
-- `skor_kuis` khusus aktivitas `quiz_attempt`
-- Jumlah event LMS
-- Rata-rata aktivitas per mahasiswa
-
-**Catatan:** Hubungan antara aktivitas LMS dan nilai dapat dianalisis dengan mengagregasikan aktivitas per mahasiswa dan mata kuliah, kemudian menghubungkannya dengan data penilaian menggunakan identitas mahasiswa dan mata kuliah yang sama.
-
-### AQ05 — Nilai Semester Awal dan Predikat Kelulusan
-
-**Analytical Question:** Bagaimana perbedaan rata-rata nilai angka pada semester awal antar kelompok predikat kelulusan?
-
-**Business Event:** Mahasiswa memperoleh nilai akademik pada semester awal dan kemudian tercatat sebagai lulusan.
-
-**Candidate Grain:** Nilai mahasiswa pada semester awal terlebih dahulu diagregasikan menjadi satu ringkasan per mahasiswa, kemudian dihubungkan dengan satu record kelulusan per mahasiswa.
+> Satu record merepresentasikan satu aktivitas LMS berdasarkan satu `lms_event_id`.
 
 **Candidate Fact:**
-- Fact_Penilaian yang diagregasikan berdasarkan mahasiswa pada semester awal.
-- Fact_Kelulusan yang memiliki satu record per mahasiswa.
+
+> Fact_Aktivitas_LMS.
 
 **Candidate Dimensions:**
+
+- Dim_Mahasiswa
+- Dim_Mata_Kuliah
+- Dim_Tipe_Aktivitas
+- Dim_Tanggal/Waktu
+
+**Candidate Measures:**
+
+- `durasi_menit`
+- `skor_kuis` (khusus `quiz_attempt`)
+- Jumlah event
+
+Catatan: Untuk menghubungkan aktivitas LMS dengan nilai, data aktivitas perlu diagregasi terlebih dahulu berdasarkan mahasiswa dan mata kuliah. Hasil agregasi tersebut kemudian dibandingkan dengan Fact_Penilaian melalui dimensi mahasiswa dan mata kuliah.
+
+### AQ05
+
+**Analytical Question:**
+
+> Bagaimana perbedaan rata-rata nilai angka pada semester awal berdasarkan kelompok predikat kelulusan mahasiswa?
+
+**Business Event:**
+
+> Mahasiswa memperoleh nilai akhir pada semester awal dan kemudian dinyatakan lulus.
+
+**Candidate Grain:**
+
+> Nilai pada dua semester awal dirangkum terlebih dahulu menjadi satu record per mahasiswa, kemudian dihubungkan dengan satu record kelulusan mahasiswa.
+
+**Candidate Fact:**
+
+> Fact_Penilaian yang diagregasi berdasarkan mahasiswa dan Fact_Kelulusan yang memiliki satu record untuk setiap mahasiswa.
+
+**Candidate Dimensions:**
+
 - Dim_Mahasiswa
 - Dim_Semester
 - Dim_Predikat_Kelulusan
 
 **Candidate Measures:**
-- Rata-rata `nilai_angka`
-- `ipk_final`
-- Jumlah mahasiswa berdasarkan predikat kelulusan
 
-**Catatan:** Penggabungan data penilaian dan kelulusan harus memperhatikan perbedaan grain. Nilai semester awal sebaiknya diringkas terlebih dahulu per mahasiswa sebelum dihubungkan dengan data kelulusan agar tidak terjadi penggandaan baris (*fan-out*).
+- `nilai_angka`
+- `ipk_final`
+
+Catatan: Kedua fact tidak boleh langsung digabungkan pada tingkat detail karena dapat mengakibatkan penggandaan record atau fan-out. Penggabungan dilakukan setelah nilai semester awal diringkas pada tingkat mahasiswa.
 
 ## 12. Traceability
 
-Traceability digunakan untuk memastikan bahwa setiap kebutuhan analitik memiliki hubungan yang jelas dari permasalahan bisnis hingga kandidat model data.
+Traceability berfungsi untuk memperlihatkan keterkaitan antara masalah bisnis, kebutuhan keputusan, pertanyaan analitis, indikator kinerja, kebutuhan data, sumber data, kualitas data, hingga kandidat model yang akan digunakan.
 
-Rumus:
+Alur yang digunakan:
 
 **Problem → Business Objective → Stakeholder → Decision Requirement → Analytical Question → KPI/Metric → Data Requirement → Source Mapping → Data Fitness → Candidate Model.**
 
-### 1. TR01 — Course Failure
+### 1. TR01 – Course Failure
 
-- Problem: Mata kuliah dengan tingkat ketidaklulusan tinggi belum mudah diidentifikasi.
-- Business Objective: BO01.
-- Stakeholder: Kaprodi.
-- Decision: Menentukan mata kuliah yang menjadi prioritas evaluasi atau remedial.
-- Analytical Question: AQ01, mata kuliah dengan persentase ketidaklulusan tertinggi pada setiap semester.
-- KPI: Course Failure Rate.
-- Data Requirement: NIM, kode mata kuliah, semester, nilai angka, dan status kelulusan.
-- Source Mapping: `nilai`, `mata_kuliah`, dan `semester`.
-- Data Fitness: Tabel `nilai` Conditional Ready; tabel `semester` Ready; tabel `mata_kuliah` perlu pemeriksaan atribut sesuai kebutuhan analisis.
-- Candidate Process: Penilaian.
-- Candidate Grain: Satu nilai akhir mahasiswa untuk satu mata kuliah pada satu semester.
-- Candidate Fact: Fact_Penilaian.
-- Candidate Dimension: Mahasiswa, mata kuliah, semester, dan program studi.
-- Candidate Measure: Nilai angka, status lulus, jumlah peserta, jumlah tidak lulus, dan Course Failure Rate.
+- Problem → Mata kuliah dengan risiko ketidaklulusan tinggi belum mudah diketahui.
+- Business Objective → BO01, meningkatkan kemampuan program studi dalam mengidentifikasi mata kuliah bermasalah.
+- Stakeholder → Kaprodi.
+- Decision → Menentukan mata kuliah yang menjadi prioritas evaluasi.
+- AQ → Mengetahui mata kuliah dengan failure rate tertinggi pada setiap semester.
+- KPI → Course Failure Rate.
+- Data → NIM, kode mata kuliah, semester, nilai angka, dan status kelulusan.
+- Source → `nilai`, `mata_kuliah`, dan `semester`.
+- Fitness → Data nilai Conditional Ready, sedangkan mata kuliah dan semester Ready.
+- Candidate Process → Penilaian.
+- Candidate Grain → Satu nilai akhir mahasiswa untuk satu mata kuliah dalam satu semester.
 
-**Penjelasan TR01:**
+Karena program studi belum mempunyai informasi yang cukup untuk mengetahui mata kuliah dengan tingkat ketidaklulusan tinggi, Kaprodi membutuhkan peningkatan kemampuan evaluasi pembelajaran agar mata kuliah yang bermasalah dapat segera ditangani. Keputusan yang harus diambil adalah menentukan mata kuliah yang menjadi prioritas evaluasi berdasarkan persentase kegagalannya. Untuk mendukung keputusan tersebut, diperlukan jawaban mengenai mata kuliah dengan failure rate tertinggi pada setiap semester menggunakan KPI Course Failure Rate. Data yang dibutuhkan mencakup NIM, kode mata kuliah, semester, nilai angka, dan status kelulusan yang bersumber dari tabel `nilai`, `mata_kuliah`, serta `semester`. Berdasarkan hasil profiling, tabel nilai memiliki kondisi Conditional Ready karena ditemukan nilai kosong, nilai di luar rentang, dan ketidaksesuaian antarjenis nilai. Sementara itu, tabel mata_kuliah dan semester telah berstatus Ready.
 
-Karena mata kuliah dengan tingkat ketidaklulusan tinggi belum mudah diketahui, Kaprodi membutuhkan informasi untuk menentukan mata kuliah yang perlu menjadi prioritas evaluasi. Untuk mendukung keputusan tersebut, diperlukan analisis mengenai persentase ketidaklulusan tertinggi pada setiap semester menggunakan KPI Course Failure Rate. Data yang dibutuhkan meliputi NIM, kode mata kuliah, semester, nilai angka, dan status kelulusan yang berasal dari tabel `nilai`, `mata_kuliah`, serta `semester`. Berdasarkan hasil profiling Unit 1.2, tabel `nilai` masih berstatus Conditional Ready karena ditemukan nilai kosong, nilai di luar rentang, dan ketidaksesuaian nilai angka dengan huruf. Oleh karena itu, data perlu divalidasi terlebih dahulu. Kandidat model yang digunakan adalah Fact_Penilaian dengan grain satu nilai akhir mahasiswa untuk satu mata kuliah pada satu semester.
+Oleh karena itu, kandidat model yang dapat digunakan adalah:
 
-### 2. TR02 — Tren Ketidaklulusan per Program Studi
+- **Grain:** Satu record berisi nilai akhir seorang mahasiswa pada satu mata kuliah dalam satu semester.
+- **Fact:** Fact_Penilaian atau Fact_Nilai_Mahasiswa.
+- **Dimension:** Dim_Mahasiswa, Dim_Mata_Kuliah, dan Dim_Semester.
+- **Measure:** `nilai_angka`, `is_lulus`, jumlah peserta, jumlah mahasiswa tidak lulus, dan Course Failure Rate (%).
 
-- Problem: Perubahan performa akademik antarprogram studi dan semester belum mudah dipantau.
-- Business Objective: BO02.
-- Stakeholder: Wakil Rektor Bidang Akademik.
-- Decision: Menentukan program studi dan periode yang membutuhkan evaluasi akademik.
-- Analytical Question: AQ02, perubahan persentase ketidaklulusan setiap program studi dari semester 2021G sampai 2024E.
-- KPI/Metric: Course Failure Rate berdasarkan program studi dan semester.
-- Data Requirement: NIM, kode mata kuliah, semester, nilai angka, status kelulusan, kode program studi, dan angkatan.
-- Source Mapping: `nilai`, `mahasiswa`, `program_studi`, dan `semester`.
-- Data Fitness: Tabel `nilai` dan `mahasiswa` Conditional Ready; tabel `program_studi` dan `semester` Ready.
-- Candidate Process: Penilaian.
-- Candidate Grain: Satu nilai akhir mahasiswa untuk satu mata kuliah pada satu semester.
-- Candidate Fact: Fact_Penilaian.
-- Candidate Dimension: Mahasiswa, program studi, mata kuliah, dan semester.
-- Candidate Measure: Jumlah peserta, jumlah mahasiswa tidak lulus, nilai rata-rata, dan failure rate.
+### 2. TR02 – On-Time Graduation
 
-**Penjelasan TR02:**
+- Problem → Pola kelulusan mahasiswa yang terlambat belum dapat dianalisis secara menyeluruh antarprogram studi.
+- Business Objective → BO03, mengevaluasi pola kelulusan tepat waktu.
+- Stakeholder → Wakil Rektor Bidang Akademik.
+- Decision → Menentukan program studi dan angkatan yang membutuhkan program peningkatan keberhasilan studi.
+- AQ → Membandingkan persentase kelulusan tepat waktu dan rata-rata masa studi antarprogram studi.
+- KPI → On-Time Graduation Rate.
+- Data → NIM, status tepat waktu, masa studi, angkatan, dan kode program studi.
+- Source → `kelulusan`, `mahasiswa`, dan `program_studi`.
+- Fitness → Data kelulusan dan mahasiswa Conditional Ready; program_studi Ready.
+- Candidate Process → Kelulusan.
+- Candidate Grain → Satu record kelulusan untuk setiap mahasiswa.
 
-Karena perubahan performa akademik antarprogram studi belum mudah dipantau dari satu semester ke semester berikutnya, Wakil Rektor Bidang Akademik membutuhkan informasi untuk menentukan program studi yang perlu mendapatkan perhatian. Analisis dilakukan dengan membandingkan persentase ketidaklulusan dari semester 2021G sampai 2024E. Data yang dibutuhkan berasal dari tabel `nilai`, `mahasiswa`, `program_studi`, dan `semester`. Berdasarkan hasil profiling, tabel mahasiswa memiliki variasi penulisan program studi dan duplikasi NIM, sedangkan tabel nilai masih memiliki beberapa masalah validitas. Tabel program studi dan semester dapat digunakan sebagai referensi. Kandidat model yang digunakan adalah Fact_Penilaian dengan grain satu nilai akhir mahasiswa untuk satu mata kuliah pada satu semester.
+Karena informasi mengenai kelulusan tepat waktu belum dapat digunakan untuk membandingkan mahasiswa yang terlambat dengan mahasiswa yang lulus sesuai target, Wakil Rektor Bidang Akademik membutuhkan evaluasi terhadap pola penyelesaian studi. Keputusan yang perlu dibuat adalah menentukan program studi dan angkatan yang memerlukan program penguatan akademik. Analisis dilakukan dengan membandingkan persentase kelulusan tepat waktu serta rata-rata masa studi menggunakan KPI On-Time Graduation Rate. Data yang diperlukan terdiri atas NIM, status tepat waktu, masa studi, angkatan, dan identitas program studi yang berasal dari tabel `kelulusan`, `mahasiswa`, dan `program_studi`.
 
-### 3. TR03 — On-Time Graduation
+Berdasarkan hasil profiling, tabel kelulusan memiliki dua record duplikat dan seluruh data yang tersedia berstatus tepat waktu. Tabel mahasiswa juga membutuhkan pembersihan karena terdapat NIM duplikat dan kode program studi yang belum seragam. Adapun tabel program_studi sudah berada dalam kondisi Ready.
 
-- Problem: Pola kelulusan tepat waktu berdasarkan program studi dan angkatan belum dapat dievaluasi secara menyeluruh.
-- Business Objective: BO03.
-- Stakeholder: Wakil Rektor Bidang Akademik dan Kaprodi.
-- Decision: Mengevaluasi program studi dan angkatan berdasarkan ketepatan waktu kelulusan serta masa studi.
-- Analytical Question: AQ03, perbedaan persentase kelulusan tepat waktu dan rata-rata masa studi antarprogram studi.
-- KPI: On-Time Graduation Rate.
-- Data Requirement: NIM, status tepat waktu, masa studi, tanggal kelulusan, angkatan, dan program studi.
-- Source Mapping: `kelulusan`, `mahasiswa`, dan `program_studi`.
-- Data Fitness: Tabel `kelulusan` dan `mahasiswa` Conditional Ready; tabel `program_studi` Ready. Perbandingan lulusan tepat waktu dengan terlambat berstatus Not Ready.
-- Candidate Process: Kelulusan.
-- Candidate Grain: Satu record kelulusan untuk satu mahasiswa.
-- Candidate Fact: Fact_Kelulusan.
-- Candidate Dimension: Mahasiswa, program studi, angkatan, dan tanggal kelulusan.
-- Candidate Measure: Status tepat waktu, masa studi, IPK akhir, jumlah lulusan, dan On-Time Graduation Rate.
+Kandidat model yang dapat disusun adalah:
 
-**Penjelasan TR03:**
+- **Grain:** Satu record kelulusan untuk satu mahasiswa.
+- **Fact:** Fact_Kelulusan.
+- **Dimension:** Dim_Mahasiswa, Dim_Program_Studi, Dim_Angkatan, dan Dim_Tanggal_Lulus.
+- **Measure:** `is_tepat_waktu`, `masa_studi_bulan`, `ipk_final`, jumlah lulusan, dan On-Time Graduation Rate (%).
 
-Karena pola kelulusan tepat waktu berdasarkan program studi belum dapat dibandingkan secara menyeluruh, Wakil Rektor Bidang Akademik membutuhkan informasi untuk mengevaluasi ketepatan waktu kelulusan dan lama studi mahasiswa. Analisis dilakukan menggunakan KPI On-Time Graduation Rate serta rata-rata masa studi. Data yang diperlukan berasal dari tabel `kelulusan`, `mahasiswa`, dan `program_studi`. Hasil profiling menunjukkan bahwa tabel kelulusan memiliki 347 record dengan 345 mahasiswa unik akibat 2 baris duplikat. Seluruh record yang tersedia berstatus tepat waktu, sehingga data belum dapat digunakan untuk membandingkan lulusan tepat waktu dan terlambat. Kandidat model yang digunakan adalah Fact_Kelulusan dengan grain satu record kelulusan untuk satu mahasiswa.
+### 3. TR03 – LMS Engagement dan Nilai
 
-### 4. TR04 — LMS Engagement dan Nilai
+- Problem → Belum diketahui secara jelas apakah keterlibatan mahasiswa di LMS mempunyai hubungan dengan hasil nilai akademik.
+- Business Objective → BO04, mengevaluasi keterkaitan aktivitas LMS dengan performa nilai.
+- Stakeholder → Dosen Pengampu dan Kaprodi.
+- Decision → Menentukan apakah aktivitas LMS dapat dimanfaatkan sebagai indikator pendukung risiko akademik.
+- AQ → Mengamati pola hubungan aktivitas LMS dengan nilai angka pada setiap mata kuliah.
+- KPI → LMS Engagement per Mata Kuliah.
+- Data → ID event LMS, NIM, kode mata kuliah, durasi, skor kuis, dan nilai angka.
+- Source → `aktivitas_lms` dan `nilai`.
+- Fitness → Aktivitas LMS Conditional Ready karena terdapat 30 duplikasi; nilai Conditional Ready karena masih ditemukan data bermasalah.
+- Candidate Process → Aktivitas Pembelajaran LMS.
+- Candidate Grain → Satu record aktivitas LMS berdasarkan satu `lms_event_id`.
 
-- Problem: Hubungan aktivitas pembelajaran LMS dengan hasil nilai akademik belum dapat dievaluasi secara terintegrasi.
-- Business Objective: BO04.
-- Stakeholder: Dosen Pengampu dan Kaprodi.
-- Decision: Menentukan apakah aktivitas LMS dapat digunakan sebagai indikator pendukung pemantauan risiko akademik.
-- Analytical Question: AQ04, pola hubungan antara jumlah atau durasi aktivitas LMS dengan nilai angka mahasiswa.
-- KPI: LMS Engagement per Mata Kuliah.
-- Data Requirement: Identitas mahasiswa, kode mata kuliah, semester, jumlah aktivitas, durasi, skor kuis, dan nilai angka.
-- Source Mapping: `aktivitas_lms`, `nilai`, `krs`, dan `mahasiswa`.
-- Data Fitness: Tabel `aktivitas_lms`, `nilai`, dan `krs` Conditional Ready; tabel mahasiswa juga memerlukan pemeriksaan kualitas.
-- Candidate Process: Aktivitas Pembelajaran LMS.
-- Candidate Grain: Satu event aktivitas LMS berdasarkan satu `lms_event_id`.
-- Candidate Fact: Fact_Aktivitas_LMS.
-- Candidate Dimension: Mahasiswa, mata kuliah, jenis aktivitas, waktu, dan semester.
-- Candidate Measure: Jumlah event, durasi aktivitas, skor kuis, dan rata-rata aktivitas per mahasiswa.
+Karena belum tersedia informasi yang menunjukkan hubungan antara keterlibatan mahasiswa dalam LMS dengan hasil akademik, Dosen Pengampu dan Kaprodi perlu melakukan evaluasi terhadap kedua informasi tersebut. Keputusan yang akan dibuat adalah menentukan apakah aktivitas LMS layak digunakan sebagai indikator tambahan untuk mendeteksi risiko akademik. Untuk itu dibutuhkan jawaban mengenai pola hubungan antara jumlah atau durasi aktivitas LMS dengan nilai angka mahasiswa melalui KPI LMS Engagement.
 
-**Penjelasan TR04:**
+Data yang diperlukan meliputi `lms_event_id`, NIM, kode mata kuliah, durasi aktivitas, skor kuis, dan nilai angka. Informasi tersebut berasal dari tabel `aktivitas_lms` dan `nilai`. Hasil profiling menunjukkan bahwa aktivitas LMS memiliki 30 event duplikat, sedangkan tabel nilai masih mempunyai nilai kosong, nilai di luar batas valid, serta ketidaksesuaian antara nilai angka, huruf, dan status kelulusan.
 
-Karena hubungan aktivitas LMS dengan hasil nilai akademik belum dapat dievaluasi secara terintegrasi, Dosen Pengampu dan Kaprodi membutuhkan informasi untuk mengetahui pola keterlibatan mahasiswa dalam pembelajaran. Analisis dilakukan dengan membandingkan jumlah atau durasi aktivitas LMS dengan nilai angka pada mata kuliah yang sama menggunakan KPI LMS Engagement. Data yang dibutuhkan berasal dari tabel `aktivitas_lms`, `nilai`, `krs`, dan `mahasiswa`. Berdasarkan hasil profiling, tabel aktivitas LMS memiliki 30 baris duplikat identik, tabel KRS memiliki 25 baris berlebih, dan tabel nilai masih memiliki beberapa masalah validitas. Oleh karena itu, pemeriksaan data diperlukan sebelum perhitungan dilakukan. Kandidat model yang digunakan adalah Fact_Aktivitas_LMS dengan grain satu event aktivitas LMS berdasarkan satu `lms_event_id`.
+Kandidat model yang dapat digunakan adalah:
 
-### 5. TR05 — Nilai Semester Awal dan Predikat Kelulusan
+- **Grain:** Satu record mewakili satu aktivitas LMS.
+- **Fact:** Fact_Aktivitas_LMS.
+- **Dimension:** Dim_Mahasiswa, Dim_Mata_Kuliah, Dim_Tipe_Aktivitas, dan Dim_Tanggal.
+- **Measure:** Jumlah event, `durasi_menit`, dan `skor_kuis`.
 
-- Problem: Perbedaan performa akademik pada semester awal berdasarkan hasil akhir kelulusan belum diketahui.
-- Business Objective: BO02 dan BO03.
-- Stakeholder: Dosen Pembimbing Akademik dan Bagian Akademik.
-- Decision: Menentukan kelompok mahasiswa yang membutuhkan evaluasi atau pendampingan berdasarkan hasil akademik awal.
-- Analytical Question: AQ05, perbedaan rata-rata nilai angka semester awal antar kelompok predikat kelulusan.
-- KPI/Metric: Rata-rata nilai angka semester awal berdasarkan predikat kelulusan.
-- Data Requirement: NIM, semester, nilai angka, predikat kelulusan, dan IPK akhir.
-- Source Mapping: `nilai`, `semester`, dan `kelulusan`.
-- Data Fitness: Tabel `nilai` Conditional Ready; tabel `kelulusan` Conditional Ready; tabel `semester` Ready.
-- Candidate Process: Penilaian dan Kelulusan.
-- Candidate Grain: Ringkasan nilai semester awal per mahasiswa yang dihubungkan dengan satu record kelulusan per mahasiswa.
-- Candidate Fact: Fact_Penilaian dan Fact_Kelulusan.
-- Candidate Dimension: Mahasiswa, semester, dan predikat kelulusan.
-- Candidate Measure: Rata-rata nilai angka semester awal, IPK akhir, dan jumlah mahasiswa berdasarkan predikat.
+Hubungan dengan nilai dianalisis dengan mengagregasi aktivitas LMS terlebih dahulu berdasarkan mahasiswa dan mata kuliah, kemudian menghubungkannya dengan Fact_Penilaian melalui dimensi bersama.
 
-**Penjelasan TR05:**
+### 4. TR04 – Deteksi Dini Mahasiswa Berisiko
 
-Karena perbedaan hasil akademik mahasiswa pada semester awal berdasarkan predikat kelulusan belum diketahui, Dosen Pembimbing Akademik dan Bagian Akademik membutuhkan informasi untuk mengevaluasi pola performa akademik mahasiswa. Analisis dilakukan dengan membandingkan rata-rata nilai angka pada semester awal berdasarkan kelompok predikat kelulusan. Data yang diperlukan berasal dari tabel `nilai`, `semester`, dan `kelulusan`. Berdasarkan hasil profiling, tabel nilai masih memiliki nilai kosong dan nilai yang tidak valid, sedangkan tabel kelulusan memiliki 2 baris duplikat. Oleh karena itu, data perlu diperiksa sebelum dilakukan penggabungan. Kandidat model menggunakan Fact_Penilaian yang diagregasikan per mahasiswa dan Fact_Kelulusan dengan satu record per mahasiswa. Penggabungan dilakukan melalui identitas mahasiswa agar tidak terjadi penggandaan data akibat perbedaan grain.
+- Problem → Kelompok mahasiswa yang memerlukan pendampingan akademik sejak awal belum dapat diidentifikasi dengan baik.
+- Business Objective → BO02, memperkuat identifikasi mahasiswa dan kelompok akademik yang berisiko.
+- Stakeholder → Dosen Pembimbing Akademik dan Bagian Akademik.
+- Decision → Menentukan kelompok mahasiswa yang membutuhkan pendampingan lebih awal.
+- AQ → Membandingkan rata-rata nilai semester awal berdasarkan kelompok predikat kelulusan.
+- KPI → Rata-rata nilai angka semester awal berdasarkan predikat kelulusan (metrik turunan dari KPI01).
+- Data → NIM, semester, nilai angka, dan predikat kelulusan.
+- Source → `nilai`, `kelulusan`, dan `semester`.
+- Fitness → Data nilai dan kelulusan Conditional Ready; data semester Ready.
+- Candidate Process → Penilaian dan Kelulusan.
+- Candidate Grain → Ringkasan nilai dua semester awal per mahasiswa yang dihubungkan dengan satu record kelulusan.
+
+Karena belum tersedia informasi yang cukup untuk mengenali kelompok mahasiswa yang membutuhkan pendampingan akademik lebih awal, Dosen Pembimbing Akademik dan Bagian Akademik perlu memperkuat proses deteksi dini. Keputusan yang harus diambil adalah menentukan kelompok mahasiswa yang perlu memperoleh perhatian berdasarkan hasil akademik pada semester awal. Analisis dilakukan dengan membandingkan rata-rata nilai angka pada dua semester awal berdasarkan kelompok predikat kelulusan.
+
+Data yang diperlukan terdiri atas NIM, semester, nilai angka, dan predikat kelulusan. Sumbernya berasal dari tabel `nilai`, `kelulusan`, dan `semester`. Berdasarkan hasil profiling, tabel nilai dan kelulusan masih berstatus Conditional Ready karena membutuhkan pembersihan dan pemeriksaan lebih lanjut. Sementara itu, tabel semester sudah berstatus Ready.
+
+Perbandingan mahasiswa tepat waktu dengan mahasiswa terlambat belum dapat dilakukan karena seluruh data kelulusan yang tersedia memiliki status tepat waktu.
+
+Kandidat model yang dapat digunakan adalah Fact_Penilaian yang terlebih dahulu diringkas menjadi rata-rata nilai semester awal per mahasiswa, kemudian dihubungkan dengan Fact_Kelulusan yang memiliki satu record per mahasiswa melalui Dim_Mahasiswa. Dimensi pendukung yang digunakan adalah Dim_Semester dan Dim_Predikat_Kelulusan.
+
+- **Grain:** Ringkasan nilai dua semester pertama untuk setiap mahasiswa yang telah dihubungkan dengan satu data kelulusan.
+- **Fact:** Fact_Penilaian dan Fact_Kelulusan.
+- **Dimension:** Dim_Mahasiswa, Dim_Semester, dan Dim_Predikat_Kelulusan.
+- **Measure:** Rata-rata nilai angka semester awal dan `ipk_final`.
+
+Penggabungan kedua fact harus dilakukan setelah data penilaian diagregasi agar tidak menimbulkan penggandaan record atau fan-out.
