@@ -1206,11 +1206,6 @@ ORDER BY jumlah DESC, status_pembayaran;
 ![Gambar 67. Soal 32 – Distribusi status pembayaran](gambar/unit-1.2_43.png)
 
 
-| status_pembayaran | jumlah |
-|---|---:|
-| Lunas | 7.962 |
-| Cicilan | 1.077 |
-| Belum Lunas | 461 |
 
 **Interpretasi**
 
