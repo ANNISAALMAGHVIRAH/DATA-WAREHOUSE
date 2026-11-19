@@ -92,24 +92,15 @@ Mengetahui jumlah record pada sepuluh tabel sumber database akademik.
 
 ```sql
 SELECT 'program_studi' AS nama_dataset, COUNT(*) AS jumlah_record FROM src.program_studi
-UNION ALL
-SELECT 'semester', COUNT(*) FROM src.semester
-UNION ALL
-SELECT 'mahasiswa', COUNT(*) FROM src.mahasiswa
-UNION ALL
-SELECT 'dosen', COUNT(*) FROM src.dosen
-UNION ALL
-SELECT 'mata_kuliah', COUNT(*) FROM src.mata_kuliah
-UNION ALL
-SELECT 'krs', COUNT(*) FROM src.krs
-UNION ALL
-SELECT 'nilai', COUNT(*) FROM src.nilai
-UNION ALL
-SELECT 'aktivitas_lms', COUNT(*) FROM src.aktivitas_lms
-UNION ALL
-SELECT 'pembayaran', COUNT(*) FROM src.pembayaran
-UNION ALL
-SELECT 'kelulusan', COUNT(*) FROM src.kelulusan;
+UNION ALL SELECT 'semester', COUNT(*) FROM src.semester
+UNION ALL SELECT 'mahasiswa', COUNT(*) FROM src.mahasiswa
+UNION ALL SELECT 'dosen', COUNT(*) FROM src.dosen
+UNION ALL SELECT 'mata_kuliah', COUNT(*) FROM src.mata_kuliah
+UNION ALL SELECT 'krs', COUNT(*) FROM src.krs
+UNION ALL SELECT 'nilai', COUNT(*) FROM src.nilai
+UNION ALL SELECT 'aktivitas_lms', COUNT(*) FROM src.aktivitas_lms
+UNION ALL SELECT 'pembayaran', COUNT(*) FROM src.pembayaran
+UNION ALL SELECT 'kelulusan', COUNT(*) FROM src.kelulusan;
 ```
 
 **Hasil eksekusi**
@@ -142,13 +133,11 @@ Mengetahui jumlah kolom pada setiap tabel dalam schema `src`.
 **Query SQL**
 
 ```sql
-SELECT
-    table_name   AS nama_tabel,
-    COUNT(*)     AS jumlah_kolom
+SELECT table_name AS nama_tabel, COUNT(*) AS jumlah_kolom
 FROM information_schema.columns
 WHERE table_schema = 'src'
 GROUP BY table_name
-ORDER BY table_name;
+ORDER BY table_name ASC;
 ```
 
 **Hasil eksekusi**
@@ -186,9 +175,9 @@ Mengetahui jumlah record mahasiswa, jumlah NIM unik, dan indikasi kelebihan reco
 
 ```sql
 SELECT
-    COUNT(*)                         AS raw_rows,
-    COUNT(DISTINCT nim)              AS distinct_nim,
-    COUNT(*) - COUNT(DISTINCT nim)   AS excess_duplicate_rows
+    COUNT(*) AS jumlah_seluruh_record,
+    COUNT(DISTINCT nim) AS jumlah_nim_unik,
+    COUNT(*) - COUNT(DISTINCT nim) AS indikasi_kelebihan_record_duplikat
 FROM src.mahasiswa;
 ```
 
@@ -213,13 +202,11 @@ Menampilkan NIM yang muncul lebih dari satu kali beserta jumlah kemunculannya.
 **Query SQL**
 
 ```sql
-SELECT
-    nim,
-    COUNT(*) AS jumlah_kemunculan
+SELECT nim, COUNT(*) AS jumlah_kemunculan
 FROM src.mahasiswa
 GROUP BY nim
 HAVING COUNT(*) > 1
-ORDER BY jumlah_kemunculan DESC, nim;
+ORDER BY jumlah_kemunculan DESC, nim ASC;
 ```
 
 **Hasil eksekusi**
