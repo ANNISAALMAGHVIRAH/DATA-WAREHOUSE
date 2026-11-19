@@ -406,7 +406,3 @@ SELECT COUNT(*) AS orphan_graduation_student
 FROM src.kelulusan k
 LEFT JOIN src.mahasiswa m ON k.nim = m.nim
 WHERE m.nim IS NULL;
-
-
-
-
