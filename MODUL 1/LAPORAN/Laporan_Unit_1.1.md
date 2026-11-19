@@ -332,17 +332,7 @@ ORDER BY tabel;
 
 ![Gambar 8. Jumlah baris lima tabel master/reference](gambar/unit-1.1_08.png)
 
-Dataset	Jumlah baris aktual	Jumlah baris acuan (bila tersedia)	Status/catatan
-aktivitas_lms	200.356	200.356	Sesuai
-dosen	96	96	Sesuai
-kelulusan	347	347	Sesuai
-krs	57.025	57.025	Sesuai
-mahasiswa	1.965	1.965	Sesuai
-mata_kuliah	208	208	Sesuai
-nilai	57.000	57.000	Sesuai
-pembayaran	9.500	9.500	Sesuai
-program_studi	6	6	Sesuai
-semester	8	8	Sesuai
+
 
 **Interpretasi:** Lima tabel master/reference berhasil diverifikasi memiliki jumlah baris yang berbeda sesuai fungsinya. Tabel `mahasiswa` berisi 1.965 baris, `mata_kuliah` 208 baris, `dosen` 96 baris, `semester` 8 baris, dan `program_studi` 6 baris. Hasil ini menunjukkan bahwa data pada kelima tabel telah tersedia dan dapat digunakan sebagai sumber referensi untuk proses profiling berikutnya.
 
