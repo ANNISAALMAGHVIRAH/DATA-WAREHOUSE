@@ -9,6 +9,19 @@
 -- =========================================================
 
 
+-- Menyiapkan dan Memverifikasi Environment Praktikum
+SELECT version();
+
+-- Memeriksa database dan user aktif
+select
+    current_database() as database_aktif,
+    current_user as user_aktif;
+
+-- Memastikan schema src tersedia
+SELECT schema_name
+FROM information_schema.schemata
+WHERE schema_name = 'src';
+
 -- =========================================================
 -- A. PROFILING STRUKTUR DAN UKURAN DATASET
 -- =========================================================
@@ -105,7 +118,6 @@ ORDER BY jumlah_mahasiswa DESC, kode_prodi_raw;
 
 
 -- SOAL 11. Nama program studi yang tidak sesuai standar
--- Pemeriksaan dilakukan dengan pencocokan persis prodi_raw dan nama_prodi.
 SELECT COUNT(*) AS jumlah_prodi_tidak_ditemukan
 FROM src.mahasiswa m
 WHERE m.prodi_raw IS NOT NULL
@@ -122,20 +134,23 @@ WHERE m.prodi_raw IS NOT NULL
 -- =========================================================
 
 -- SOAL 12. Mengidentifikasi variasi format tanggal masuk
+WITH klasifikasi AS (
+    SELECT
+        CASE
+            WHEN tanggal_masuk_raw ~ '^\d{4}-\d{2}-\d{2}$'        THEN 'YYYY-MM-DD'
+            WHEN tanggal_masuk_raw ~ '^\d{2}/\d{2}/\d{4}$'        THEN 'DD/MM/YYYY'
+            WHEN tanggal_masuk_raw ~ '^\d{2}-[A-Za-z]{3}-\d{4}$'   THEN 'DD-Mon-YYYY'
+            ELSE 'OTHER'
+        END AS format_tanggal
+    FROM src.mahasiswa
+)
 SELECT
-    CASE
-        WHEN tanggal_masuk_raw ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
-            THEN 'YYYY-MM-DD'
-        WHEN tanggal_masuk_raw ~ '^[0-9]{2}/[0-9]{2}/[0-9]{4}$'
-            THEN 'DD/MM/YYYY'
-        WHEN tanggal_masuk_raw ~ '^[0-9]{2}-[A-Za-z]{3}-[0-9]{4}$'
-            THEN 'DD-Mon-YYYY'
-        ELSE 'OTHER'
-    END AS format_tanggal,
-    COUNT(*) AS jumlah_record
-FROM src.mahasiswa
-GROUP BY 1
-ORDER BY jumlah_record DESC, format_tanggal;
+    f.format_tanggal,
+    COUNT(k.format_tanggal) AS jumlah_record
+FROM (VALUES ('YYYY-MM-DD'), ('DD/MM/YYYY'), ('DD-Mon-YYYY'), ('OTHER')) AS f(format_tanggal)
+LEFT JOIN klasifikasi k ON k.format_tanggal = f.format_tanggal
+GROUP BY f.format_tanggal
+ORDER BY jumlah_record DESC;
 
 -- Interpretasi:
     -- Berdasarkan hasil query, ditemukan tiga variasi format tanggal masuk mahasiswa. 
@@ -204,29 +219,38 @@ WHERE nilai_angka BETWEEN 0 AND 100;
 -- =========================================================
 
 -- SOAL 19. Memeriksa konsistensi nilai angka dengan nilai huruf
-SELECT COUNT(*) AS jumlah_ketidaksesuaian_nilai_huruf
-FROM src.nilai
-WHERE nilai_angka BETWEEN 0 AND 100
-  AND nilai_huruf IS DISTINCT FROM
-      CASE
-          WHEN nilai_angka >= 85 THEN 'A'
-          WHEN nilai_angka >= 80 THEN 'AB'
-          WHEN nilai_angka >= 75 THEN 'B'
-          WHEN nilai_angka >= 70 THEN 'BC'
-          WHEN nilai_angka >= 60 THEN 'C'
-          WHEN nilai_angka >= 50 THEN 'D'
-          ELSE 'E'
+WITH nilai_valid AS (
+    SELECT
+        nilai_id,
+        NULLIF(TRIM(nilai_angka::text), '')::numeric AS angka,
+        TRIM(nilai_huruf) AS huruf
+    FROM src.nilai
+)
+SELECT COUNT(*) AS letter_mismatch FROM nilai_valid
+WHERE angka BETWEEN 0 AND 100
+  AND huruf IS DISTINCT FROM CASE
+        WHEN angka >= 85 THEN 'A'
+        WHEN angka >= 80 THEN 'AB'
+        WHEN angka >= 75 THEN 'B'
+        WHEN angka >= 70 THEN 'BC'
+        WHEN angka >= 60 THEN 'C'
+        WHEN angka >= 50 THEN 'D'
+        ELSE 'E'
       END;
 
+
 -- SOAL 20. Memeriksa konsistensi nilai angka dengan status kelulusan
-SELECT COUNT(*) AS jumlah_ketidaksesuaian_status_lulus
-FROM src.nilai
-WHERE nilai_angka BETWEEN 0 AND 100
-  AND status_lulus IS DISTINCT FROM
-      CASE
-          WHEN nilai_angka >= 60 THEN 'Lulus'
-          ELSE 'Tidak Lulus'
-      END;
+WITH nilai_valid AS (
+    SELECT
+        NULLIF(TRIM(nilai_angka::text), '')::numeric AS angka,
+        TRIM(status_lulus) AS status_lulus
+    FROM src.nilai
+)
+SELECT COUNT(*) AS status_mismatch
+FROM nilai_valid
+WHERE angka BETWEEN 0 AND 100
+  AND ( (angka >= 60 AND status_lulus IS DISTINCT FROM 'Lulus')
+     OR (angka <  60 AND status_lulus IS DISTINCT FROM 'Tidak Lulus') );
 
 
 -- =========================================================
@@ -246,36 +270,31 @@ ORDER BY jumlah_kemunculan DESC, nim, kode_mk, semester_id;
 --    MATA KULIAH, DAN SEMESTER
 -- =========================================================
 
--- SOAL 22. NIM KRS yang tidak terdaftar sebagai mahasiswa
-SELECT COUNT(*) AS jumlah_nim_krs_tidak_terdaftar
+-- SOAL 22. NIM KRS yang tidak terdaftar di mahasiswa
+SELECT COUNT(*) AS krs_nim_tidak_terdaftar
 FROM src.krs k
-WHERE NOT EXISTS (
-    SELECT 1 FROM src.mahasiswa m WHERE m.nim = k.nim
-);
+LEFT JOIN src.mahasiswa m ON k.nim = m.nim
+WHERE m.nim IS NULL;
 
 
--- SOAL 23. NIM pada tabel nilai yang tidak terdaftar sebagai mahasiswa
-SELECT COUNT(*) AS jumlah_nim_nilai_tidak_terdaftar
+-- SOAL 23. NIM pada tabel nilai yang tidak terdaftar di mahasiswa
+SELECT COUNT(*) AS nim_tidak_terdaftar
 FROM src.nilai n
-WHERE NOT EXISTS (
-    SELECT 1 FROM src.mahasiswa m WHERE m.nim = n.nim
-);
-
+LEFT JOIN src.mahasiswa m ON n.nim = m.nim
+WHERE m.nim IS NULL;
 
 -- SOAL 24. Kode mata kuliah pada nilai yang tidak memiliki referensi
-SELECT COUNT(*) AS jumlah_kode_mk_nilai_tidak_ditemukan
+SELECT COUNT(*) AS orphan_nilai_mk
 FROM src.nilai n
-WHERE NOT EXISTS (
-    SELECT 1 FROM src.mata_kuliah mk WHERE mk.kode_mk = n.kode_mk
-);
+LEFT JOIN src.mata_kuliah mk ON n.kode_mk = mk.kode_mk
+WHERE mk.kode_mk IS NULL;
 
 
 -- SOAL 25. Semester pada nilai yang tidak memiliki referensi
-SELECT COUNT(*) AS jumlah_semester_nilai_tidak_ditemukan
+SELECT COUNT(*) AS orphan_nilai_semester
 FROM src.nilai n
-WHERE NOT EXISTS (
-    SELECT 1 FROM src.semester s WHERE s.semester_id = n.semester_id
-);
+LEFT JOIN src.semester s ON n.semester_id = s.semester_id
+WHERE s.semester_id IS NULL;
 
 
 -- =========================================================
@@ -284,31 +303,34 @@ WHERE NOT EXISTS (
 
 -- SOAL 26. Mengukur duplikasi aktivitas LMS
 SELECT
-    COUNT(*) AS jumlah_seluruh_aktivitas,
-    COUNT(DISTINCT lms_event_id) AS jumlah_lms_event_id_unik,
-    COUNT(*) - COUNT(DISTINCT lms_event_id) AS indikasi_kelebihan_record_duplikat
+    COUNT(*)                          AS raw_rows,
+    COUNT(DISTINCT lms_event_id)      AS distinct_event_id,
+    COUNT(*) - COUNT(DISTINCT lms_event_id) AS duplicate_excess
 FROM src.aktivitas_lms;
 
 
 -- SOAL 27. Menganalisis distribusi tipe aktivitas LMS
-SELECT tipe_event, COUNT(*) AS jumlah_aktivitas
+SELECT
+    tipe_event,
+    COUNT(*) AS jumlah
 FROM src.aktivitas_lms
 GROUP BY tipe_event
-ORDER BY jumlah_aktivitas DESC, tipe_event;
+ORDER BY jumlah DESC, tipe_event;
 
 
 -- SOAL 28. Memeriksa kelengkapan skor kuis pada aktivitas quiz_attempt
-SELECT COUNT(*) AS jumlah_quiz_attempt_tanpa_skor
+SELECT COUNT(*) AS quiz_missing_score
 FROM src.aktivitas_lms
 WHERE tipe_event = 'quiz_attempt'
-  AND skor_kuis IS NULL;
+  AND (skor_kuis IS NULL OR TRIM(skor_kuis::text) = '');
 
 
 -- SOAL 29. Mengidentifikasi skor pada aktivitas selain kuis
-SELECT COUNT(*) AS jumlah_skor_pada_aktivitas_non_quiz
+SELECT COUNT(*) AS nonquiz_with_score
 FROM src.aktivitas_lms
-WHERE tipe_event IS DISTINCT FROM 'quiz_attempt'
-  AND skor_kuis IS NOT NULL;
+WHERE tipe_event <> 'quiz_attempt'
+  AND skor_kuis IS NOT NULL
+  AND TRIM(skor_kuis::text) <> '';
 
 
 -- =========================================================
@@ -316,26 +338,23 @@ WHERE tipe_event IS DISTINCT FROM 'quiz_attempt'
 -- =========================================================
 
 -- SOAL 30. Mengidentifikasi nominal pembayaran negatif
-SELECT COUNT(*) AS jumlah_pembayaran_bernominal_negatif
+SELECT COUNT(*) AS negative_payment
 FROM src.pembayaran
 WHERE nominal_bayar < 0;
 
 
 -- SOAL 31. Memeriksa tanggal pembayaran yang kosong
-SELECT COUNT(*) AS jumlah_tanggal_bayar_kosong
+SELECT COUNT(*) AS positive_payment_missing_date
 FROM src.pembayaran
 WHERE nominal_bayar > 0
-  AND (
-      tanggal_bayar_raw IS NULL
-      OR BTRIM(tanggal_bayar_raw) = ''
-  );
+  AND (tanggal_bayar_raw IS NULL OR TRIM(tanggal_bayar_raw) = '');
 
 
 -- SOAL 32. Menganalisis distribusi status pembayaran
 SELECT status_pembayaran, COUNT(*) AS jumlah_record
 FROM src.pembayaran
 GROUP BY status_pembayaran
-ORDER BY jumlah_record DESC, status_pembayaran;
+ORDER BY jumlah DESC, status_pembayaran;
 
 
 -- =========================================================
@@ -344,9 +363,9 @@ ORDER BY jumlah_record DESC, status_pembayaran;
 
 -- SOAL 33. Memeriksa duplikasi data kelulusan berdasarkan NIM
 SELECT
-    COUNT(*) AS jumlah_seluruh_record_kelulusan,
-    COUNT(DISTINCT nim) AS jumlah_nim_unik,
-    COUNT(*) - COUNT(DISTINCT nim) AS indikasi_kelebihan_record_duplikat
+    COUNT(*)                         AS raw_rows,
+    COUNT(DISTINCT nim)              AS distinct_graduate_nim,
+    COUNT(*) - COUNT(DISTINCT nim)   AS duplicate_excess
 FROM src.kelulusan;
 
 
@@ -362,32 +381,32 @@ ORDER BY jumlah_mahasiswa DESC, status_tepat_waktu;
 -- =========================================================
 
 -- SOAL 35. Memeriksa aktivitas LMS dengan NIM yang tidak terdaftar
-SELECT COUNT(*) AS jumlah_aktivitas_nim_tidak_terdaftar
+SELECT COUNT(*) AS orphan_lms_student
 FROM src.aktivitas_lms a
-WHERE NOT EXISTS (
-    SELECT 1 FROM src.mahasiswa m WHERE m.nim = a.nim
-);
+LEFT JOIN src.mahasiswa m ON a.nim = m.nim
+WHERE m.nim IS NULL;
 
 
 -- SOAL 36. Memeriksa aktivitas LMS dengan mata kuliah yang tidak terdaftar
-SELECT COUNT(*) AS jumlah_aktivitas_kode_mk_tidak_terdaftar
+SELECT COUNT(*) AS orphan_lms_course
 FROM src.aktivitas_lms a
-WHERE NOT EXISTS (
-    SELECT 1 FROM src.mata_kuliah mk WHERE mk.kode_mk = a.kode_mk
-);
+LEFT JOIN src.mata_kuliah mk ON a.kode_mk = mk.kode_mk
+WHERE mk.kode_mk IS NULL;
 
 
 -- SOAL 37. Memeriksa pembayaran dengan NIM yang tidak terdaftar
-SELECT COUNT(*) AS jumlah_pembayaran_nim_tidak_terdaftar
+SELECT COUNT(*) AS orphan_payment_student
 FROM src.pembayaran p
-WHERE NOT EXISTS (
-    SELECT 1 FROM src.mahasiswa m WHERE m.nim = p.nim
-);
+LEFT JOIN src.mahasiswa m ON p.nim = m.nim
+WHERE m.nim IS NULL;
 
 
 -- SOAL 38. Memeriksa data kelulusan dengan NIM yang tidak terdaftar
-SELECT COUNT(*) AS jumlah_kelulusan_nim_tidak_terdaftar
+SELECT COUNT(*) AS orphan_graduation_student
 FROM src.kelulusan k
-WHERE NOT EXISTS (
-    SELECT 1 FROM src.mahasiswa m WHERE m.nim = k.nim
-);
+LEFT JOIN src.mahasiswa m ON k.nim = m.nim
+WHERE m.nim IS NULL;
+
+
+
+
