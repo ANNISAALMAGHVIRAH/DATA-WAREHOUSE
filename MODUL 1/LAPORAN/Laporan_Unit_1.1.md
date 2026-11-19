@@ -64,11 +64,6 @@ SELECT
 ![Gambar 2. Hasil database dan user aktif](gambar/unit-1.1_02.png)
 
 
-| database_aktif | user_aktif |
-|---|---|
-| [uadw_lab] | [postgres] |
-
-
 ### 1.3 Memeriksa keberadaan schema `src`
 
 Query yang digunakan:
@@ -82,11 +77,6 @@ WHERE schema_name = 'src';
 **Hasil eksekusi:**
 
 ![Gambar 3. Hasil pemeriksaan schema src](gambar/unit-1.1_03.png)
-
-
-| schema_name |
-|---|
-| src |
 
 
 ---
@@ -321,19 +311,6 @@ ORDER BY table_name;
 ![Gambar 7. Daftar base table pada schema src](gambar/unit-1.1_07.png)
 
 
-| table_schema | table_name |
-|---|---|
-| src | aktivitas_lms |
-| src | dosen |
-| src | kelulusan |
-| src | krs |
-| src | mahasiswa |
-| src | mata_kuliah |
-| src | nilai |
-| src | pembayaran |
-| src | program_studi |
-| src | semester |
-
 **Interpretasi:** Schema `src` berisi 10 base table yang sesuai dengan sepuluh dataset praktikum, sehingga source layer lengkap.
 
 ---
@@ -356,13 +333,6 @@ ORDER BY tabel;
 ![Gambar 8. Jumlah baris lima tabel master/reference](gambar/unit-1.1_08.png)
 
 
-| tabel | jumlah_baris |
-|---|---:|
-| `dosen` | 96 |
-| `mahasiswa` | 1.965 |
-| `mata_kuliah` | 208 |
-| `program_studi` | 6 |
-| `semester` | 8 |
 
 **Interpretasi:** Lima tabel master/reference berhasil diverifikasi memiliki jumlah baris yang berbeda sesuai fungsinya. Tabel `mahasiswa` berisi 1.965 baris, `mata_kuliah` 208 baris, `dosen` 96 baris, `semester` 8 baris, dan `program_studi` 6 baris. Hasil ini menunjukkan bahwa data pada kelima tabel telah tersedia dan dapat digunakan sebagai sumber referensi untuk proses profiling berikutnya.
 
@@ -400,18 +370,6 @@ ORDER BY tabel;
 ![Gambar 9. Jumlah baris seluruh sepuluh tabel](gambar/unit-1.1_09.png)
 
 
-| Dataset | Jumlah baris aktual | Jumlah baris acuan (bila tersedia) | Status/catatan |
-|---|---:|---:|---|
-| `aktivitas_lms` | 200.356 | 200.356 | Sesuai |
-| `dosen` | 96 | 96 | Sesuai |
-| `kelulusan` | 347 | 347 | Sesuai |
-| `krs` | 57.025 | 57.025 | Sesuai |
-| `mahasiswa` | 1.965 | 1.965 | Sesuai |
-| `mata_kuliah` | 208 | 208 | Sesuai |
-| `nilai` | 57.000 | 57.000 | Sesuai |
-| `pembayaran` | 9.500 | 9.500 | Sesuai |
-| `program_studi` | 6 | 6 | Sesuai |
-| `semester` | 8 | 8 | Sesuai |
 
 **Interpretasi:** Seluruh tabel memiliki jumlah baris yang sama dengan nilai acuan, sehingga pemuatan dinilai lengkap. Tidak ada tabel yang kosong atau kekurangan baris.
 
@@ -435,19 +393,6 @@ ORDER BY table_name;
 
 ![Gambar 10. Jumlah kolom setiap tabel](gambar/unit-1.1_10.png)
 
-
-| table_name | jumlah_kolom |
-|---|---:|
-| `aktivitas_lms` | 9 |
-| `dosen` | 7 |
-| `kelulusan` | 7 |
-| `krs` | 8 |
-| `mahasiswa` | 11 |
-| `mata_kuliah` | 7 |
-| `nilai` | 8 |
-| `pembayaran` | 8 |
-| `program_studi` | 5 |
-| `semester` | 6 |
 
 **Interpretasi:** Berdasarkan hasil query, jumlah kolom pada setiap tabel berada pada rentang 5 sampai 11 kolom. Tabel `mahasiswa` memiliki jumlah kolom terbanyak, yaitu 11 kolom, sedangkan `program_studi` memiliki jumlah kolom paling sedikit, yaitu 5 kolom. Jumlah kolom tersebut sesuai dengan struktur source yang digunakan dalam praktikum.
 
@@ -473,20 +418,6 @@ ORDER BY ordinal_position;
 ![Gambar 11. Struktur kolom tabel mahasiswa](gambar/unit-1.1_11.png)
 
 
-| posisi_kolom | nama_kolom | tipe_data |
-|---:|---|---|
-| 1 | nim | text |
-| 2 | nama | text |
-| 3 | jk_raw | text |
-| 4 | tanggal_lahir_raw | text |
-| 5 | kota_asal_raw | text |
-| 6 | kode_prodi_raw | text |
-| 7 | prodi_raw | text |
-| 8 | angkatan | Integer |
-| 9 | tanggal_masuk_raw | text |
-| 10 | status_raw | text |
-| 11 | email_kampus | text |
-
 **Interpretasi:** Tabel `mahasiswa` memiliki 11 kolom sesuai urutan header CSV. Berdasarkan hasil verifikasi, 10 kolom bertipe `text`, sedangkan kolom `angkatan` bertipe `integer`. Kolom-kolom yang menggunakan akhiran `_raw` tetap menyimpan nilai sumber tanpa standardisasi pada tahap ini. Karena `angkatan` sudah bertipe `integer`, nilai minimum dan maksimum dapat dihitung secara numerik tanpa perlu mengubah tipe datanya terlebih dahulu.
 ---
 
@@ -506,10 +437,6 @@ FROM src.mahasiswa;
 
 ![Gambar 12. Verifikasi candidate key NIM](gambar/unit-1.1_12.png)
 
-
-| raw_rows | distinct_nim | excess_duplicate_rows |
-|---:|---:|---:|
-| 1.965 | 1.950 | 15 |
 
 **Analisis:**
 
@@ -539,10 +466,6 @@ FROM src.mahasiswa;
 ![Gambar 13. Rentang tahun angkatan](gambar/unit-1.1_13.png)
 
 
-| angkatan_min | angkatan_max |
-|---:|---:|
-| 2021 | 2024 |
-
 **Interpretasi:** Berdasarkan hasil query, tahun angkatan mahasiswa paling awal adalah 2021 dan paling akhir adalah 2024. Dengan demikian, dataset mencakup empat kelompok angkatan, yaitu 2021, 2022, 2023, dan 2024. Karena kolom `angkatan` pada hasil verifikasi bertipe `integer`, fungsi `MIN` dan `MAX` menghitung rentang tahun secara numerik.
 
 
@@ -563,10 +486,6 @@ WHERE TRIM(COALESCE(kota_asal_raw, '')) = '';
 ![Gambar 14. Jumlah kota asal kosong](gambar/unit-1.1_14.png)
 
 
-| missing_kota |
-|---:|
-| 30 |
-
 **Interpretasi:** Hasil query menunjukkan bahwa terdapat 30 record mahasiswa yang tidak memiliki informasi kota asal, atau sekitar 1,53% dari total 1.965 baris. Kondisi ini dapat menyebabkan analisis persebaran daerah asal mahasiswa menjadi kurang lengkap karena sebagian data lokasi tidak tersedia. Nilai yang kosong tetap dibiarkan apa adanya karena tahap ini hanya melakukan profiling dan belum mencakup proses pengisian atau perbaikan data.
 
 ---
@@ -585,10 +504,6 @@ FROM src.mahasiswa;
 ![Gambar 15. Jumlah label prodi_raw berbeda](gambar/unit-1.1_15.png)
 
 
-| distinct_prodi_raw |
-|---:|
-| 30 |
-
 **Interpretasi:** Hasil query menemukan 30 nilai berbeda pada kolom `prodi_raw`, sedangkan tabel referensi `src.program_studi` hanya memuat 6 program studi resmi. Perbedaan jumlah tersebut menunjukkan adanya variasi label program studi pada data mahasiswa, misalnya penggunaan singkatan, perbedaan kapitalisasi, atau bentuk penulisan lainnya. Temuan ini menjadi indikasi awal bahwa label program studi perlu dipetakan ke referensi resmi pada tahap transformasi, tetapi belum diubah pada source.
 ---
 
@@ -605,10 +520,6 @@ FROM src.program_studi;
 
 ![Gambar 16. Jumlah program studi pada tabel referensi](gambar/unit-1.1_16.png)
 
-
-| canonical_programs |
-|---:|
-| 6 |
 
 **Perbandingan:**
 
@@ -643,39 +554,6 @@ ORDER BY prodi_raw;
 ![Gambar 19. Distribusi label program studi mentah (baris 21–30)](gambar/unit-1.1_19.png)
 
 
-| prodi_raw | jumlah |
-|---|---:|
-| BD | 21 |
-| Bisnis Dig. | 18 |
-| BISNIS DIGITAL | 12 |
-| Bisnis Digital | 229 |
-| Bisnis digital | 15 |
-| Data Science | 8 |
-| DS | 25 |
-| IF | 34 |
-| INFORMATIKA | 16 |
-| Informatika | 276 |
-| informatika | 20 |
-| SAINS DATA | 11 |
-| Sains Data | 234 |
-| Sains data | 15 |
-| SI | 17 |
-| Sist. Informasi | 17 |
-| SISTEM INFORMASI | 18 |
-| Sistem Informasi | 281 |
-| Sistem informasi | 19 |
-| Tek. Informasi | 25 |
-| Tek. Rekayasa Komputer | 16 |
-| Teknik Informatika | 25 |
-| TEKNOLOGI INFORMASI | 24 |
-| Teknologi Informasi | 286 |
-| Teknologi informasi | 13 |
-| TEKNOLOGI REKAYASA KOMPUTER | 12 |
-| Teknologi Rekayasa Komputer | 224 |
-| TI | 25 |
-| TR | 13 |
-| TRK | 16 |
-
 
 **Interpretasi:** Distribusi menunjukkan bahwa label *Teknologi Informasi* memiliki jumlah terbanyak, yaitu 286 record. Selain enam label yang sama dengan nama program studi pada tabel referensi, terdapat 24 label lain dengan total 435 record atau sekitar 22,1% dari seluruh data mahasiswa. Variasi tersebut terlihat dalam bentuk singkatan, pemendekan nama, dan perbedaan kapitalisasi. Oleh karena itu, label-label tersebut perlu diperiksa dan dipetakan terlebih dahulu sebelum dilakukan standardisasi agar setiap mahasiswa terhubung dengan program studi yang tepat.
 
@@ -698,15 +576,6 @@ ORDER BY jk_raw;
 
 ![Gambar 20. Variasi label jenis kelamin](gambar/unit-1.1_20.png)
 
-
-| jk_raw | jumlah |
-|---|---:|
-| F | 39 |
-| L | 764 |
-| Laki-laki | 162 |
-| M | 53 |
-| P | 764 |
-| Perempuan | 183 |
 
 **Interpretasi:**  Hasil pengelompokan menunjukkan terdapat enam label pada kolom `jk_raw`, yaitu `F`, `L`, `Laki-laki`, `M`, `P`, dan `Perempuan`. Keenam label tersebut merepresentasikan dua kategori, yaitu laki-laki dan perempuan, tetapi ditulis dengan bentuk yang berbeda. Jika data langsung dihitung berdasarkan label mentah, jumlah setiap kategori dapat terpisah ke beberapa kelompok. Karena itu, standardisasi label diperlukan pada tahap transformasi berikutnya, bukan pada source raw.
 
@@ -732,14 +601,6 @@ LIMIT 5;
 
 ![Gambar 24. Sampel lima record mahasiswa (kolom tanggal_masuk_raw–email_kampus)](gambar/unit-1.1_24.png)
 
-
-| nim | nama | jk_raw | tanggal_lahir_raw | kota_asal_raw | kode_prodi_raw | prodi_raw | angkatan | tanggal_masuk_raw | status_raw | email_kampus |
-|---|---|---|---|---|---|---|---|---|---|---|
-| 21TI0001 | Dimas Sari Permatasari | M | 14/01/2002 | Surabaya | TI | Teknologi Informasi | 2021 | 2021-08-25 | Aktif | 21ti0001@student.uadw.ac.id |
-| 21TI0002 | Fitri Nugraha | L | 2002-05-20 | Kendari | TI | Teknologi Informasi | 2021 | 2021-08-22 | Lulus | 21ti0002@student.uadw.ac.id |
-| 21TI0003 | Dian Sari | Laki-laki | 2002-09-14 | Kendari | TI | Teknologi Informasi | 2021 | 2021-08-21 | Lulus | 21ti0003@student.uadw.ac.id |
-| 21TI0004 | Alya Kurniawan | Perempuan | 2002-01-10 | Kendari | TI | Teknologi Informasi | 2021 | 2021-08-19 | Lulus | 21ti0004@student.uadw.ac.id |
-| 21TI0005 | Fauzan Febriani Setiaji | P | 07/06/2001 | Padang | TI | Teknologi Informasi | 2021 | 2021-08-25 | Lulus | 21ti0005@student.uadw.ac.id |
 
 *Lima baris pertama berdasarkan urutan baris pada file sumber (tanpa `ORDER BY`).*
 
@@ -771,19 +632,6 @@ ORDER BY rows DESC;
 ![Gambar 25. Source dengan jumlah baris terbesar](gambar/unit-1.1_25.png)
 
 
-| source | rows |
-|---|---:|
-| aktivitas_lms | 200.356 |
-| krs | 57.025 |
-| nilai | 57.000 |
-| pembayaran | 9.500 |
-| mahasiswa | 1.965 |
-| kelulusan | 347 |
-| mata_kuliah | 208 |
-| dosen | 96 |
-| semester | 8 |
-| program_studi | 6 |
-
 **Source dengan jumlah baris terbanyak:** `aktivitas_lms`
 
 **Jumlah baris:** 200.356
@@ -814,14 +662,6 @@ SELECT 'kelulusan', COUNT(DISTINCT nim) FROM src.kelulusan;
 
 ![Gambar 26. Jumlah NIM unik pada tabel transaksi/aktivitas](gambar/unit-1.1_26.png)
 
-
-| source | distinct_nim |
-|---|---:|
-| `krs` | 1.950 |
-| `nilai` | 1.950 |
-| `aktivitas_lms` | 1.950 |
-| `pembayaran` | 1.950 |
-| `kelulusan` | 345 |
 
 ### 18.1 Catatan relasi awal
 
