@@ -108,19 +108,6 @@ UNION ALL SELECT 'kelulusan', COUNT(*) FROM src.kelulusan;
 ![Gambar 30. Soal 1 – Jumlah record setiap tabel](gambar/unit-1.2_04.png)
 
 
-| Dataset | Jumlah Record |
-|---|---:|
-| `program_studi` | 6 |
-| `semester` | 8 |
-| `mahasiswa` | 1.965 |
-| `dosen` | 96 |
-| `mata_kuliah` | 208 |
-| `krs` | 57.025 |
-| `nilai` | 57.000 |
-| `aktivitas_lms` | 200.356 |
-| `pembayaran` | 9.500 |
-| `kelulusan` | 347 |
-
 **Interpretasi**
 
 Tabel terbesar adalah `aktivitas_lms` (200.356 record) yang merupakan log aktivitas LMS, disusul `krs` (57.025) dan `nilai` (57.000). Tabel terkecil adalah `program_studi` (6 record) dan `semester` (8 record) yang berperan sebagai tabel referensi. Pola ini wajar: tabel transaksi berukuran jauh lebih besar daripada tabel master/referensi. Perbedaan `krs` (57.025) dengan `nilai` (57.000) sebanyak 25 record sudah menjadi petunjuk awal adanya duplikasi pada KRS (dibuktikan pada Soal 13–15).
@@ -143,7 +130,6 @@ ORDER BY table_name ASC;
 **Hasil eksekusi**
 
 ![Gambar 31. Soal 2 – Jumlah kolom setiap tabel](gambar/unit-1.2_05.png)
-
 
 
 **Interpretasi**
@@ -202,23 +188,6 @@ ORDER BY jumlah_kemunculan DESC, nim ASC;
 
 Hasil query menampilkan **15 baris** (15 NIM), masing-masing muncul 2 kali.
 
-| nim | jumlah_kemunculan |
-|---|---:|
-| 21IF0052 | 2 |
-| 21TI0042 | 2 |
-| 21TR0015 | 2 |
-| 22BD0068 | 2 |
-| 22IF0004 | 2 |
-| 23DS0040 | 2 |
-| 23SI0066 | 2 |
-| 23SI0082 | 2 |
-| 23TI0055 | 2 |
-| 24BD0013 | 2 |
-| 24BD0019 | 2 |
-| 24BD0028 | 2 |
-| 24DS0078 | 2 |
-| 24TI0005 | 2 |
-| 24TI0062 | 2 |
 
 **Interpretasi**
 
@@ -234,20 +203,17 @@ Menghitung jumlah record dengan `kota_asal_raw` kosong, `NULL`, atau hanya beris
 **Query SQL**
 
 ```sql
-SELECT COUNT(*) AS missing_kota
+SELECT COUNT(*) AS jumlah_kota_asal_kosong
 FROM src.mahasiswa
 WHERE kota_asal_raw IS NULL
-   OR TRIM(kota_asal_raw) = '';
+   OR BTRIM(kota_asal_raw) = '';
+
 ```
 
 **Hasil eksekusi**
 
 ![Gambar 35. Soal 5 – Kelengkapan kota asal](gambar/unit-1.2_09.png)
 
-
-| Missing Kota Asal |
-|---:|
-| 30 |
 
 **Interpretasi**
 
@@ -261,12 +227,10 @@ Menampilkan frekuensi setiap label pada kolom `prodi_raw`.
 **Query SQL**
 
 ```sql
-SELECT
-    prodi_raw,
-    COUNT(*) AS frekuensi
+SELECT prodi_raw, COUNT(*) AS jumlah_mahasiswa
 FROM src.mahasiswa
 GROUP BY prodi_raw
-ORDER BY frekuensi DESC, prodi_raw;
+ORDER BY jumlah_mahasiswa DESC, prodi_raw;
 ```
 
 **Hasil eksekusi**
@@ -277,39 +241,6 @@ ORDER BY frekuensi DESC, prodi_raw;
 
 ![Gambar 38. Soal 6 – Distribusi prodi_raw (bagian 3 dari 3)](gambar/unit-1.2_12.png)
 
-
-| prodi_raw | frekuensi |
-|---|---:|
-| Teknologi Informasi | 286 |
-| Sistem Informasi | 281 |
-| Informatika | 276 |
-| Sains Data | 234 |
-| Bisnis Digital | 229 |
-| Teknologi Rekayasa Komputer | 224 |
-| IF | 34 |
-| DS | 25 |
-| TI | 25 |
-| Tek. Informasi | 25 |
-| Teknik Informatika | 25 |
-| TEKNOLOGI INFORMASI | 24 |
-| BD | 21 |
-| informatika | 20 |
-| Sistem informasi | 19 |
-| Bisnis Dig. | 18 |
-| SISTEM INFORMASI | 18 |
-| SI | 17 |
-| Sist. Informasi | 17 |
-| INFORMATIKA | 16 |
-| TRK | 16 |
-| Tek. Rekayasa Komputer | 16 |
-| Bisnis digital | 15 |
-| Sains data | 15 |
-| TR | 13 |
-| Teknologi informasi | 13 |
-| BISNIS DIGITAL | 12 |
-| TEKNOLOGI REKAYASA KOMPUTER | 12 |
-| SAINS DATA | 11 |
-| Data Science | 8 |
 
 **Interpretasi**
 
@@ -323,18 +254,16 @@ Menghitung jumlah nilai berbeda pada kolom `prodi_raw`.
 **Query SQL**
 
 ```sql
-SELECT COUNT(DISTINCT prodi_raw) AS distinct_raw_prodi
-FROM src.mahasiswa;
+SELECT COUNT(DISTINCT prodi_raw) AS jumlah_variasi_nama_prodi
+FROM src.mahasiswa
+WHERE prodi_raw IS NOT NULL
+  AND BTRIM(prodi_raw) <> '';
 ```
 
 **Hasil eksekusi**
 
 ![Gambar 39. Soal 7 – Variasi penulisan program studi](gambar/unit-1.2_13.png)
 
-
-| Jumlah Variasi `prodi_raw` |
-|---:|
-| 30 |
 
 **Interpretasi**
 
@@ -348,27 +277,16 @@ Menampilkan setiap nilai `jk_raw` dan frekuensi kemunculannya.
 **Query SQL**
 
 ```sql
-SELECT
-    jk_raw,
-    COUNT(*) AS frekuensi
+SELECT jk_raw, COUNT(*) AS jumlah_mahasiswa
 FROM src.mahasiswa
 GROUP BY jk_raw
-ORDER BY frekuensi DESC, jk_raw;
+ORDER BY jumlah_mahasiswa DESC, jk_raw;
 ```
 
 **Hasil eksekusi**
 
 ![Gambar 40. Soal 8 – Distribusi jk_raw](gambar/unit-1.2_14.png)
 
-
-| jk_raw | frekuensi |
-|---|---:|
-| L | 764 |
-| P | 764 |
-| Perempuan | 183 |
-| Laki-laki | 162 |
-| M | 53 |
-| F | 39 |
 
 **Interpretasi**
 
@@ -382,27 +300,16 @@ Menampilkan variasi nilai `status_raw` dan jumlah record pada setiap status.
 **Query SQL**
 
 ```sql
-SELECT
-    status_raw,
-    COUNT(*) AS frekuensi
+SELECT status_raw, COUNT(*) AS jumlah_record
 FROM src.mahasiswa
 GROUP BY status_raw
-ORDER BY frekuensi DESC, status_raw;
+ORDER BY jumlah_record DESC, status_raw;
 ```
 
 **Hasil eksekusi**
 
 ![Gambar 39. Soal 9 – Distribusi status_raw](gambar/unit-1.2_15.png)
 
-
-| status_raw | frekuensi |
-|---|---:|
-| Aktif | 1567 |
-| Lulus | 348 |
-| AKTIF | 18 |
-| "Aktif " (diakhiri spasi) | 16 |
-| cuti | 9 |
-| Cuti | 7 |
 
 **Interpretasi**
 
@@ -416,12 +323,10 @@ Menampilkan nilai `kode_prodi_raw` dan frekuensi kemunculannya.
 **Query SQL**
 
 ```sql
-SELECT
-    kode_prodi_raw,
-    COUNT(*) AS frekuensi
+SELECT kode_prodi_raw, COUNT(*) AS jumlah_mahasiswa
 FROM src.mahasiswa
 GROUP BY kode_prodi_raw
-ORDER BY frekuensi DESC, kode_prodi_raw;
+ORDER BY jumlah_mahasiswa DESC, kode_prodi_raw;
 ```
 
 **Hasil eksekusi**
@@ -432,33 +337,6 @@ ORDER BY frekuensi DESC, kode_prodi_raw;
 
 ![Gambar 42. Soal 10 – Distribusi kode_prodi_raw (bagian 3 dari 3)](gambar/unit-1.2_18.png)
 
-
-| kode_prodi_raw | frekuensi |
-|---|---:|
-| IF | 336 |
-| TI | 326 |
-| SI | 319 |
-| DS | 265 |
-| BD | 256 |
-| TR | 255 |
-| ' TI' | 19 |
-| ' BD' | 17 |
-| 'SI ' | 16 |
-| 'TI ' | 15 |
-| ' IF' | 14 |
-| if | 14 |
-| ds | 13 |
-| ti | 13 |
-| ' DS' | 12 |
-| ' TR' | 12 |
-| bd | 12 |
-| tr | 11 |
-| 'BD ' | 10 |
-| si | 9 |
-| ' SI' | 8 |
-| 'IF ' | 7 |
-| 'DS ' | 3 |
-| 'TR ' | 3 |
 
 Nilai yang ditulis dengan tanda kutip memiliki spasi di depan/belakang.
 
@@ -474,21 +352,20 @@ Menghitung record mahasiswa dengan `prodi_raw` yang tidak cocok persis dengan `p
 **Query SQL**
 
 ```sql
-SELECT COUNT(*) AS non_standard_prodi_rows
+SELECT COUNT(*) AS jumlah_prodi_tidak_ditemukan
 FROM src.mahasiswa m
-LEFT JOIN src.program_studi p
-       ON m.prodi_raw = p.nama_prodi
-WHERE p.nama_prodi IS NULL;
+WHERE m.prodi_raw IS NOT NULL
+  AND BTRIM(m.prodi_raw) <> ''
+  AND NOT EXISTS (
+      SELECT 1
+      FROM src.program_studi p
+      WHERE p.nama_prodi = m.prodi_raw
 ```
 
 **Hasil eksekusi**
 
 ![Gambar 43. Soal 11 – Nama program studi tidak sesuai standar](gambar/unit-1.2_19.png)
 
-
-| Non-standard Prodi Rows |
-|---:|
-| 435 |
 
 **Interpretasi**
 
@@ -526,13 +403,6 @@ ORDER BY jumlah_record DESC;
 ![Gambar 44. Soal 12 – Variasi format tanggal masuk](gambar/unit-1.2_20.png)
 
 
-| Format Tanggal | Jumlah Record |
-|---|---:|
-| `YYYY-MM-DD` | 1.429 |
-| `DD/MM/YYYY` | 346 |
-| `DD-Mon-YYYY` | 190 |
-| `OTHER` | 0 |
-
 **Interpretasi**
 
 Format dominan adalah `YYYY-MM-DD` (1.429 record, 72,7%). Dua format lain masih ditemukan (346 dan 190 record), sehingga total sekitar 27% record bukan format ISO. Kategori `OTHER` bernilai 0 artinya tidak ada format di luar tiga pola yang diperkirakan. Perlu dicatat bahwa kecocokan pola belum membuktikan tanggal valid secara kalender, dan format `DD/MM/YYYY` berpotensi ambigu dengan `MM/DD/YYYY`.
@@ -550,19 +420,14 @@ Membandingkan jumlah seluruh record KRS dengan jumlah `krs_id` yang unik.
 
 ```sql
 SELECT
-    COUNT(*)                AS raw_rows,
-    COUNT(DISTINCT krs_id)  AS distinct_krs_id
+    COUNT(*) AS jumlah_seluruh_record_krs,
+    COUNT(DISTINCT krs_id) AS jumlah_krs_id_unik
 FROM src.krs;
 ```
 
 **Hasil eksekusi**
 
 ![Gambar 45. Soal 13 – Record KRS vs krs_id unik](gambar/unit-1.2_21.png)
-
-
-| Raw Rows | Distinct KRS ID |
-|---:|---:|
-| 57.025 | 57.000 |
 
 **Interpretasi**
 
@@ -576,15 +441,11 @@ Menemukan kombinasi `nim`, `kode_mk`, dan `semester_id` yang muncul lebih dari s
 **Query SQL**
 
 ```sql
-SELECT
-    nim,
-    kode_mk,
-    semester_id,
-    COUNT(*) AS jumlah
+SELECT nim, kode_mk, semester_id, COUNT(*) AS jumlah_kemunculan
 FROM src.krs
 GROUP BY nim, kode_mk, semester_id
 HAVING COUNT(*) > 1
-ORDER BY jumlah DESC, nim, kode_mk, semester_id;
+ORDER BY jumlah_kemunculan DESC, nim, kode_mk, semester_id;
 ```
 
 **Hasil eksekusi**
@@ -598,33 +459,6 @@ ORDER BY jumlah DESC, nim, kode_mk, semester_id;
 
 Hasil query menampilkan **25 kombinasi** `nim + kode_mk + semester_id`, masing-masing dengan `jumlah` = 2.
 
-| nim | kode_mk | semester_id | jumlah |
-|---|---|---|---:|
-| 21BD0005 | BD604 | 2023E | 2 |
-| 21BD0014 | MKU302 | 2022G | 2 |
-| 21DS0003 | DS202 | 2021E | 2 |
-| 21DS0027 | MKU801 | 2024E | 2 |
-| 21DS0039 | DS703 | 2024G | 2 |
-| 21DS0054 | DS703 | 2024G | 2 |
-| 21SI0011 | SI101 | 2021G | 2 |
-| 21SI0017 | SI102 | 2021G | 2 |
-| 21SI0031 | SI604 | 2023E | 2 |
-| 21SI0070 | MKU201 | 2021E | 2 |
-| 21TI0005 | TI101 | 2021G | 2 |
-| 21TI0022 | MKU502 | 2023G | 2 |
-| 21TI0024 | MKU501 | 2023G | 2 |
-| 21TR0020 | MKU801 | 2024E | 2 |
-| 21TR0047 | TR801 | 2024E | 2 |
-| 22IF0013 | IF302 | 2023G | 2 |
-| 22IF0025 | IF101 | 2022G | 2 |
-| 22SI0026 | MKU202 | 2022E | 2 |
-| 22TR0008 | TR301 | 2023G | 2 |
-| 22TR0041 | TR203 | 2022E | 2 |
-| 23IF0077 | IF301 | 2024G | 2 |
-| 23SI0072 | MKU101 | 2023G | 2 |
-| 23TR0002 | TR204 | 2023E | 2 |
-| 24DS0022 | DS102 | 2024G | 2 |
-| 24SI0043 | MKU202 | 2024E | 2 |
 
 **Interpretasi**
 
@@ -640,23 +474,19 @@ Menghitung total record yang melebihi satu record pada setiap kelompok duplikat.
 **Query SQL**
 
 ```sql
-SELECT COALESCE(SUM(jumlah - 1), 0) AS excess_duplicate_krs
+SELECT COALESCE(SUM(jumlah_kemunculan - 1), 0) AS total_kelebihan_record_duplikat
 FROM (
-    SELECT COUNT(*) AS jumlah
+    SELECT COUNT(*) AS jumlah_kemunculan
     FROM src.krs
     GROUP BY nim, kode_mk, semester_id
     HAVING COUNT(*) > 1
-) AS t;
+) AS kelompok_duplikat;
 ```
 
 **Hasil eksekusi**
 
 ![Gambar 49. Soal 15 – Kelebihan record KRS akibat duplikasi](gambar/unit-1.2_25.png)
 
-
-| Excess Duplicate KRS |
-|---:|
-| 25 |
 
 **Interpretasi**
 
@@ -674,20 +504,15 @@ Menghitung record dengan `nilai_angka` kosong, `NULL`, atau hanya berisi spasi.
 **Query SQL**
 
 ```sql
-SELECT COUNT(*) AS missing_nilai_angka
+SELECT COUNT(*) AS jumlah_nilai_angka_kosong
 FROM src.nilai
-WHERE nilai_angka IS NULL
-   OR TRIM(nilai_angka::text) = '';
+WHERE nilai_angka IS NULL;
 ```
 
 **Hasil eksekusi**
 
 ![Gambar 50. Soal 16 – Nilai angka kosong](gambar/unit-1.2_26.png)
 
-
-| Missing Nilai Angka |
-|---:|
-| 20 |
 
 **Interpretasi**
 
@@ -701,21 +526,16 @@ Menghitung nilai angka di luar rentang 0–100 (nilai kosong tidak dihitung).
 **Query SQL**
 
 ```sql
-SELECT COUNT(*) AS invalid_nilai_angka
+SELECT COUNT(*) AS jumlah_nilai_di_luar_rentang
 FROM src.nilai
-WHERE NULLIF(TRIM(nilai_angka::text), '') IS NOT NULL
-  AND (NULLIF(TRIM(nilai_angka::text), '')::numeric < 0
-    OR NULLIF(TRIM(nilai_angka::text), '')::numeric > 100);
+WHERE nilai_angka IS NOT NULL
+  AND (nilai_angka < 0 OR nilai_angka > 100);
 ```
 
 **Hasil eksekusi**
 
 ![Gambar 51. Soal 17 – Nilai angka di luar rentang 0–100](gambar/unit-1.2_27.png)
 
-
-| Invalid Nilai Angka |
-|---:|
-| 12 |
 
 **Interpretasi**
 
@@ -729,17 +549,13 @@ Menghitung jumlah nilai valid, minimum, maksimum, dan rata-rata untuk nilai angk
 **Query SQL**
 
 ```sql
-WITH nilai_valid AS (
-    SELECT NULLIF(TRIM(nilai_angka::text), '')::numeric AS angka
-    FROM src.nilai
-)
 SELECT
-    COUNT(*)                AS valid_rows,
-    MIN(angka)              AS nilai_minimum,
-    MAX(angka)              AS nilai_maksimum,
-    ROUND(AVG(angka), 2)    AS nilai_rata_rata
-FROM nilai_valid
-WHERE angka BETWEEN 0 AND 100;
+    COUNT(*) AS jumlah_record_nilai_valid,
+    MIN(nilai_angka) AS nilai_terendah,
+    MAX(nilai_angka) AS nilai_tertinggi,
+    AVG(nilai_angka) AS nilai_rata_rata
+FROM src.nilai
+WHERE nilai_angka BETWEEN 0 AND 100;
 ```
 
 **Hasil eksekusi**
@@ -748,10 +564,6 @@ WHERE angka BETWEEN 0 AND 100;
 
 ![Gambar 53. Soal 18 – Statistik deskriptif nilai valid (bagian 2 dari 2)](gambar/unit-1.2_29.png)
 
-
-| Valid Rows | Minimum | Maksimum | Rata-rata |
-|---:|---:|---:|---:|
-| 56.968 | 34,8 | 100,0 | 77,40 |
 
 Jumlah valid = 57.000 − 20 (kosong) − 12 (di luar rentang 0–100) = 56.968. Sebagai pembanding, tanpa filter rentang nilai berkisar −18 sampai 106 (rata-rata 77,39) sehingga outlier memperlebar rentang.
 
@@ -774,8 +586,7 @@ WITH nilai_valid AS (
         TRIM(nilai_huruf) AS huruf
     FROM src.nilai
 )
-SELECT COUNT(*) AS letter_mismatch
-FROM nilai_valid
+SELECT COUNT(*) AS letter_mismatch FROM nilai_valid
 WHERE angka BETWEEN 0 AND 100
   AND huruf IS DISTINCT FROM CASE
         WHEN angka >= 85 THEN 'A'
@@ -792,10 +603,6 @@ WHERE angka BETWEEN 0 AND 100
 
 ![Gambar 54. Soal 19 – Konsistensi nilai angka dan nilai huruf](gambar/unit-1.2_30.png)
 
-
-| Letter Mismatch |
-|---:|
-| 20 |
 
 **Interpretasi**
 
@@ -827,10 +634,6 @@ WHERE angka BETWEEN 0 AND 100
 ![Gambar 55. Soal 20 – Konsistensi nilai angka dan status kelulusan](gambar/unit-1.2_31.png)
 
 
-| Status Mismatch |
-|---:|
-| 0 |
-
 Sebagai pembanding, pemeriksaan **nilai_huruf vs status_lulus** pada profiling awal menemukan 17 record tidak konsisten. Pemeriksaan tersebut berbasis huruf sehingga berbeda dengan soal ini yang berbasis nilai angka.
 
 **Interpretasi**
@@ -845,15 +648,11 @@ Menampilkan kombinasi `nim`, `kode_mk`, `semester_id` yang tercatat lebih dari s
 **Query SQL**
 
 ```sql
-SELECT
-    nim,
-    kode_mk,
-    semester_id,
-    COUNT(*) AS jumlah
+SELECT nim, kode_mk, semester_id, COUNT(*) AS jumlah_kemunculan
 FROM src.nilai
 GROUP BY nim, kode_mk, semester_id
 HAVING COUNT(*) > 1
-ORDER BY jumlah DESC, nim, kode_mk, semester_id;
+ORDER BY jumlah_kemunculan DESC, nim, kode_mk, semester_id;
 ```
 
 **Hasil eksekusi**
@@ -890,10 +689,6 @@ WHERE m.nim IS NULL;
 ![Gambar 57. Soal 22 – NIM KRS tidak terdaftar](gambar/unit-1.2_33.png)
 
 
-| krs_nim_tidak_terdaftar |
-|---:|
-| 0 |
-
 **Interpretasi**
 
 Hasilnya **0**: seluruh NIM pada tabel KRS memiliki pasangan pada tabel referensi. Tidak ditemukan record yatim (orphan) sehingga join aman. Integritas referensial pada relasi ini terpenuhi pada pemeriksaan ini.
@@ -916,10 +711,6 @@ WHERE m.nim IS NULL;
 
 ![Gambar 58. Soal 23 – NIM nilai tidak terdaftar](gambar/unit-1.2_34.png)
 
-
-| nim_tidak_terdaftar |
-|---:|
-| 0 |
 
 **Interpretasi**
 
@@ -944,10 +735,6 @@ WHERE mk.kode_mk IS NULL;
 ![Gambar 59. Soal 24 – Kode MK nilai tidak terdaftar](gambar/unit-1.2_35.png)
 
 
-| orphan_nilai_mk |
-|---:|
-| 0 |
-
 **Interpretasi**
 
 Hasilnya **0**: seluruh `kode_mk` pada tabel nilai memiliki pasangan pada tabel referensi. Tidak ditemukan record yatim (orphan) sehingga join aman. Integritas referensial pada relasi ini terpenuhi pada pemeriksaan ini.
@@ -970,10 +757,6 @@ WHERE s.semester_id IS NULL;
 
 ![Gambar 60. Soal 25 – Semester nilai tidak terdaftar](gambar/unit-1.2_36.png)
 
-
-| orphan_nilai_semester |
-|---:|
-| 0 |
 
 **Interpretasi**
 
@@ -1003,10 +786,6 @@ FROM src.aktivitas_lms;
 ![Gambar 61. Soal 26 – Duplikasi aktivitas LMS](gambar/unit-1.2_37.png)
 
 
-| Raw Rows | Distinct Event ID | Duplicate Excess |
-|---:|---:|---:|
-| 200.356 | 200.326 | 30 |
-
 **Interpretasi**
 
 Terdapat 30 record berlebih (0,015% dari total). Berdasarkan profiling lanjutan, ke-30 baris identik penuh sehingga terindikasi *exact duplicate* yang membuat jumlah event dan durasi belajar sedikit membengkak.
@@ -1032,14 +811,6 @@ ORDER BY jumlah DESC, tipe_event;
 ![Gambar 62. Soal 27 – Distribusi tipe aktivitas LMS](gambar/unit-1.2_38.png)
 
 
-| tipe_event | jumlah |
-|---|---:|
-| view_material | 56.040 |
-| login | 50.136 |
-| assignment_submit | 43.859 |
-| quiz_attempt | 40.321 |
-| forum_post | 10.000 |
-
 **Interpretasi**
 
 Terdapat 5 tipe aktivitas. Paling banyak adalah `view_material` (56.040) dan paling sedikit `forum_post` (10.000). Tidak ditemukan variasi penulisan label tipe event. Komposisi menunjukkan mahasiswa lebih banyak membuka materi dan login dibandingkan berpartisipasi di forum.
@@ -1062,10 +833,6 @@ WHERE tipe_event = 'quiz_attempt'
 
 ![Gambar 63. Soal 28 – Skor kuis kosong pada quiz_attempt](gambar/unit-1.2_39.png)
 
-
-| Quiz Missing Score |
-|---:|
-| 0 |
 
 **Interpretasi**
 
@@ -1090,10 +857,6 @@ WHERE tipe_event <> 'quiz_attempt'
 
 ![Gambar 64. Soal 29 – Skor pada aktivitas selain kuis](gambar/unit-1.2_40.png)
 
-
-| Nonquiz With Score |
-|---:|
-| 0 |
 
 **Interpretasi**
 
@@ -1121,10 +884,6 @@ WHERE nominal_bayar < 0;
 ![Gambar 65. Soal 30 – Nominal pembayaran negatif](gambar/unit-1.2_41.png)
 
 
-| Negative Payment |
-|---:|
-| 5 |
-
 **Interpretasi**
 
 Ditemukan **5 record** bernominal negatif (nilai minimum −5.750.000), semuanya berstatus Lunas. Contoh: `PAY0001112` (tagihan 5.750.000, bayar −5.750.000). Transaksi ini perlu ditelusuri sesuai konteks pencatatan keuangan (apakah koreksi/refund atau kesalahan input) karena dapat membuat total pembayaran dan piutang salah hitung.
@@ -1148,10 +907,6 @@ WHERE nominal_bayar > 0
 ![Gambar 66. Soal 31 – Pembayaran positif tanpa tanggal bayar](gambar/unit-1.2_42.png)
 
 
-| Positive Payment Missing Date |
-|---:|
-| 12 |
-
 **Interpretasi**
 
 Terdapat **12 record** (10 berstatus Lunas dan 2 Cicilan) tanpa tanggal pembayaran. Total tanggal kosong pada tabel ini 473, dengan 461 di antaranya berstatus Belum Lunas sehingga wajar kosong. Ke-12 record ini mengganggu analisis ketepatan waktu pembayaran dan perlu dikonfirmasi ke sumber data.
@@ -1164,9 +919,7 @@ Menampilkan jumlah record berdasarkan setiap nilai `status_pembayaran`.
 **Query SQL**
 
 ```sql
-SELECT
-    status_pembayaran,
-    COUNT(*) AS jumlah
+SELECT status_pembayaran, COUNT(*) AS jumlah_record
 FROM src.pembayaran
 GROUP BY status_pembayaran
 ORDER BY jumlah DESC, status_pembayaran;
@@ -1175,7 +928,6 @@ ORDER BY jumlah DESC, status_pembayaran;
 **Hasil eksekusi**
 
 ![Gambar 67. Soal 32 – Distribusi status pembayaran](gambar/unit-1.2_43.png)
-
 
 
 **Interpretasi**
@@ -1206,10 +958,6 @@ FROM src.kelulusan;
 ![Gambar 68. Soal 33 – Duplikasi data kelulusan](gambar/unit-1.2_44.png)
 
 
-| Raw Rows | Distinct Graduate NIM | Duplicate Excess |
-|---:|---:|---:|
-| 347 | 345 | 2 |
-
 **Interpretasi**
 
 Ada 2 NIM yang tercatat dua kali (contoh: `21SI0036` dan `21BD0005`); kedua baris identik penuh sehingga terindikasi duplikat persis. Konteks bisnis juga mendukung: satu mahasiswa seharusnya hanya lulus satu kali. Duplikasi ini dapat membuat jumlah lulusan dan rata-rata IPK bias.
@@ -1222,22 +970,16 @@ Menampilkan jumlah record berdasarkan setiap nilai `status_tepat_waktu`.
 **Query SQL**
 
 ```sql
-SELECT
-    status_tepat_waktu,
-    COUNT(*) AS jumlah
+SELECT status_tepat_waktu, COUNT(*) AS jumlah_mahasiswa
 FROM src.kelulusan
 GROUP BY status_tepat_waktu
-ORDER BY jumlah DESC, status_tepat_waktu;
+ORDER BY jumlah_mahasiswa DESC, status_tepat_waktu;
 ```
 
 **Hasil eksekusi**
 
 ![Gambar 69. Soal 34 – Status kelulusan tepat waktu](gambar/unit-1.2_45.png)
 
-
-| status_tepat_waktu | jumlah |
-|---|---:|
-| Ya | 347 |
 
 **Interpretasi**
 
@@ -1266,10 +1008,6 @@ WHERE m.nim IS NULL;
 ![Gambar 70. Soal 35 – Aktivitas LMS dengan NIM tidak terdaftar](gambar/unit-1.2_46.png)
 
 
-| orphan_lms_student |
-|---:|
-| 0 |
-
 **Interpretasi**
 
 Hasilnya **0**: seluruh NIM pada aktivitas LMS dapat dihubungkan dengan tabel induknya. Tidak ada orphan, sehingga relasi ini aman digunakan untuk join pada tahap berikutnya.
@@ -1292,10 +1030,6 @@ WHERE mk.kode_mk IS NULL;
 
 ![Gambar 71. Soal 36 – Aktivitas LMS dengan kode MK tidak terdaftar](gambar/unit-1.2_47.png)
 
-
-| orphan_lms_course |
-|---:|
-| 0 |
 
 **Interpretasi**
 
@@ -1320,10 +1054,6 @@ WHERE m.nim IS NULL;
 ![Gambar 72. Soal 37 – Pembayaran dengan NIM tidak terdaftar](gambar/unit-1.2_48.png)
 
 
-| orphan_payment_student |
-|---:|
-| 0 |
-
 **Interpretasi**
 
 Hasilnya **0**: seluruh NIM pada pembayaran dapat dihubungkan dengan tabel induknya. Tidak ada orphan, sehingga relasi ini aman digunakan untuk join pada tahap berikutnya.
@@ -1346,10 +1076,6 @@ WHERE m.nim IS NULL;
 
 ![Gambar 73. Soal 38 – Kelulusan dengan NIM tidak terdaftar](gambar/unit-1.2_49.png)
 
-
-| orphan_graduation_student |
-|---:|
-| 0 |
 
 **Interpretasi**
 
