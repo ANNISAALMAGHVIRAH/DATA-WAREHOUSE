@@ -145,18 +145,6 @@ ORDER BY table_name ASC;
 ![Gambar 31. Soal 2 – Jumlah kolom setiap tabel](gambar/unit-1.2_05.png)
 
 
-| Nama Tabel | Jumlah Kolom |
-|---|---:|
-| `aktivitas_lms` | 9 |
-| `dosen` | 7 |
-| `kelulusan` | 7 |
-| `krs` | 8 |
-| `mahasiswa` | 11 |
-| `mata_kuliah` | 7 |
-| `nilai` | 8 |
-| `pembayaran` | 8 |
-| `program_studi` | 5 |
-| `semester` | 6 |
 
 **Interpretasi**
 
@@ -185,10 +173,6 @@ FROM src.mahasiswa;
 
 ![Gambar 32. Soal 3 – Keunikan NIM mahasiswa](gambar/unit-1.2_06.png)
 
-
-| Raw Rows | Distinct NIM | Excess Duplicate Rows |
-|---:|---:|---:|
-| 1.965 | 1.950 | 15 |
 
 **Interpretasi**
 
